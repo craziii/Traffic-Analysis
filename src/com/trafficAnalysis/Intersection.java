@@ -1,43 +1,134 @@
 package com.trafficAnalysis;
 
 public class Intersection {
-    Node[] incomingNodes = new Node[4];
-    Node[] outgoingNodes = new Node[4];
+    private final Node inNorth;
+    private final Node inEast;
+    private final Node inSouth;
+    private final Node inWest;
+    private final Node outNorth;
+    private final Node outEast;
+    private final Node outSouth;
+    private final Node outWest;
 
-    Intersection(IntersectionNodes in, IntersectionNodes out){
-        incomingNodes = in.toArray();
-        outgoingNodes = out.toArray();
+    Intersection(IntersectionBuilder builder){
+        this.inNorth = builder.inNorthBuilder;
+        this.inEast = builder.inEastBuilder;
+        this.inSouth = builder.inSouthBuilder;
+        this.inWest = builder.inWestBuilder;
+        this.outNorth = builder.outNorthBuilder;
+        this.outEast = builder.outEastBuilder;
+        this.outSouth = builder.outSouthBuilder;
+        this.outWest = builder.outWestBuilder;
     }
 
-    Intersection(IntersectionNodes nodes, boolean ingoing){
-        if(ingoing){
-            incomingNodes = nodes.toArray();
+    void simulate(){
+
+    }
+
+    public Node getInNorth() {
+        return inNorth;
+    }
+
+    public Node getInEast() {
+        return inEast;
+    }
+
+    public Node getInSouth() {
+        return inSouth;
+    }
+
+    public Node getInWest() {
+        return inWest;
+    }
+
+    public Node getOutNorth() {
+        return outNorth;
+    }
+
+    public Node getOutEast() {
+        return outEast;
+    }
+
+    public Node getOutSouth() {
+        return outSouth;
+    }
+
+    public Node getOutWest() {
+        return outWest;
+    }
+
+    public static class IntersectionBuilder{
+        private Node inNorthBuilder;
+        private Node inEastBuilder;
+        private Node inSouthBuilder;
+        private Node inWestBuilder;
+        private Node outNorthBuilder;
+        private Node outEastBuilder;
+        private Node outSouthBuilder;
+        private Node outWestBuilder;
+
+        public IntersectionBuilder(){
+
         }
-        else{
-            outgoingNodes = nodes.toArray();
+
+        public IntersectionBuilder inN(Node inN){
+            this.inNorthBuilder = inN;
+            return this;
+        }
+
+        public IntersectionBuilder inE(Node inE){
+            this.inEastBuilder = inE;
+            return this;
+        }
+
+        public IntersectionBuilder inS(Node inS){
+            this.inSouthBuilder = inS;
+            return this;
+        }
+
+        public IntersectionBuilder inW(Node inW){
+            this.inWestBuilder = inW;
+            return this;
+        }
+
+        public IntersectionBuilder outN(Node outN){
+            this.outNorthBuilder = outN;
+            return this;
+        }
+
+        public IntersectionBuilder outE(Node outE){
+            this.outEastBuilder = outE;
+            return this;
+        }
+
+        public IntersectionBuilder outS(Node outS){
+            this.outSouthBuilder = outS;
+            return this;
+        }
+
+        public IntersectionBuilder outW(Node outW){
+            this.outWestBuilder = outW;
+            return this;
+        }
+
+        public Intersection build(){
+            Intersection intersection = new Intersection(this);
+            validateIntersection(intersection);
+            return intersection;
+        }
+
+        private void validateIntersection(Intersection intersection){
+            StringBuilder stringBuilder = new StringBuilder();
+
+
+            if(stringBuilder.toString().equals("")){
+                System.out.println("Intersection validated correctly");
+            }
+            else{
+                System.out.println(stringBuilder.toString());
+            }
+
         }
     }
 
-    public class IntersectionNodes{
-        Node north;
-        Node east;
-        Node south;
-        Node west;
-
-        IntersectionNodes(Node n, Node e, Node s, Node w){
-            north = n;
-            east = e;
-            south = s;
-            west = w;
-        }
-
-        Node[] toArray(){
-            Node[] arr = new Node[4];
-            arr[0] = north;
-            arr[1] = east;
-            arr[2] = south;
-            arr[3] = west;
-            return arr;
-        }
-    }
 }
