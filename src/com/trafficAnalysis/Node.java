@@ -6,9 +6,15 @@ public class Node{
 
     Node[] beforeAfter = new Node[2];
     UUID uuid;
+    float pressure;
 
     public Node(){
         createUuid();
+        pressure = 0;
+    }
+
+    public Node(float pressureOfNode){
+        pressure = pressureOfNode;
     }
 
     public Node(Node nodeBeforeOrAfter, boolean isAfter){
@@ -51,5 +57,11 @@ public class Node{
         beforeAfter[1] = node;
     }
 
+    float getPressure(){
+        return pressure;
+    }
 
+    void setPressure(float p){
+        pressure = p;
+    }
 }
