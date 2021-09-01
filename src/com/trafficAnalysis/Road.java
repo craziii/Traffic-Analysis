@@ -7,7 +7,7 @@ public class Road{
 
     List<Node> nodesInRoad;
 
-
+    UUID uuid;
 
     Node firstNode;
     Node lastNode;
@@ -18,6 +18,7 @@ public class Road{
             addNodeToRoad(node);
         }
         organiseNodes();
+        uuid = UUID.randomUUID();
     }
 
     void organiseNodes(){
@@ -44,6 +45,14 @@ public class Road{
 
     void simulate(){
 
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public Node[] getNodes(){
+        return (Node[]) nodesInRoad.toArray();
     }
 
     public Node getFirstNode() {

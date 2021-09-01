@@ -1,6 +1,9 @@
 package com.trafficAnalysis;
 
+import java.util.UUID;
+
 public class Intersection {
+    private final UUID uuid;
     private final Node inNorth;
     private final Node inEast;
     private final Node inSouth;
@@ -11,6 +14,7 @@ public class Intersection {
     private final Node outWest;
 
     Intersection(IntersectionBuilder builder){
+        this.uuid = builder.uuidBuilder;
         this.inNorth = builder.inNorthBuilder;
         this.inEast = builder.inEastBuilder;
         this.inSouth = builder.inSouthBuilder;
@@ -24,6 +28,8 @@ public class Intersection {
     void simulate(){
 
     }
+
+    public UUID getUuid(){ return uuid; }
 
     public Node getInNorth() {
         return inNorth;
@@ -58,6 +64,7 @@ public class Intersection {
     }
 
     public static class IntersectionBuilder{
+        private UUID uuidBuilder;
         private Node inNorthBuilder;
         private Node inEastBuilder;
         private Node inSouthBuilder;
@@ -68,7 +75,7 @@ public class Intersection {
         private Node outWestBuilder;
 
         public IntersectionBuilder(){
-
+            uuidBuilder = UUID.randomUUID();
         }
 
         public IntersectionBuilder inN(Node inN){

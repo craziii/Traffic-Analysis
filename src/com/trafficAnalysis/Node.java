@@ -7,10 +7,12 @@ public class Node{
     Node[] beforeAfter = new Node[2];
     UUID uuid;
     float pressure;
+    CarStatus nodeStatus;
 
     public Node(){
         createUuid();
         pressure = 0;
+        nodeStatus = CarStatus.noCar;
     }
 
     public Node(float pressureOfNode){
@@ -31,6 +33,69 @@ public class Node{
         setNodeBefore(nodeBefore);
         setNodeAfter(nodeAfter);
         createUuid();
+    }
+
+    void updatePressure(){
+        switch (nodeStatus){
+            case noCar: break;
+            case movingFullSpeed: moveCarFullSpeed(); break;
+            case movingSlowly: moveCarSlowSpeed(); break;
+            case waiting: carWaiting(); break;
+            case annoyed: carAnnoyed(); break;
+        }
+    }
+
+    void moveCarFullSpeed(){
+        CarStatus[] nextNodes = {getNodeAfter().nodeStatus,getNodeAfter().getNodeAfter().nodeStatus};
+        if(nextNodes[0] == CarStatus.noCar && nextNodes[1] == CarStatus.noCar){
+            carEnteringNode(getNodeAfter().getNodeAfter());
+            carExitingNode();
+        }
+        else if(nextNodes[0] == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            moveCarSlowSpeed();
+        }
+        else{
+            setStatus(CarStatus.waiting);
+            carWaiting();
+        }
+    }
+
+    void moveCarSlowSpeed(){
+        CarStatus nextNode = getNodeAfter().nodeStatus;
+        if(nextNode == CarStatus.noCar){
+            carEnteringNode(getNodeAfter());
+            carExitingNode();
+        }
+        else{
+            setStatus(CarStatus.waiting);
+            carWaiting();
+        }
+    }
+
+    void carWaiting(){
+
+    }
+
+    void carAnnoyed(){
+
+    }
+
+    void carEnteringNode(Node entryPoint){
+        if(entryPoint == getNodeBefore()){
+            nodeStatus = CarStatus.movingSlowly;
+        }
+        else{
+            nodeStatus = CarStatus.movingFullSpeed;
+        }
+    }
+
+    void carExitingNode(){
+        nodeStatus = CarStatus.noCar;
+    }
+
+    public void setStatus(CarStatus status){
+        nodeStatus = status;
     }
 
     void createUuid(){
@@ -63,5 +128,13 @@ public class Node{
 
     void setPressure(float p){
         pressure = p;
+    }
+
+    public enum CarStatus{
+        annoyed,
+        waiting,
+        movingSlowly,
+        movingFullSpeed,
+        noCar
     }
 }
