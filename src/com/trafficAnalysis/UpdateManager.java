@@ -1,13 +1,14 @@
 package com.trafficAnalysis;
 
-import java.util.Dictionary;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class UpdateManager {
-    Dictionary<UUID,Node> nodeDictionary;
-    Dictionary<UUID,Road> roadDictionary;
-    Dictionary<UUID,Intersection> intersectionDictionary;
+    Map<UUID,Node> nodeMap;
+    Map<UUID,Road> roadMap;
+    Map<UUID,Intersection> intersectionMap;
 
     List<NodeMove> nodeMoveList;
     List<IntersectionMove> intersectionMoveList;
@@ -17,24 +18,48 @@ public class UpdateManager {
     }
 
     void addNodeToDictionary(UUID uuid, Node node){
-        nodeDictionary.put(uuid,node);
+        nodeMap.put(uuid,node);
     }
 
     void addRoadToDictionary(UUID uuid, Road road){
-        roadDictionary.put(uuid,road);
+        roadMap.put(uuid,road);
     }
 
     void addIntersectionToDictionary(UUID uuid, Intersection intersection){
-        intersectionDictionary.put(uuid, intersection);
+        intersectionMap.put(uuid, intersection);
     }
 
     void updateCycle(){
         nodeMoveList.clear();
         intersectionMoveList.clear();
+        ExecutorService threadPool = Executors.newCachedThreadPool();
+        List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
+        List<Future<IntersectionMove[]>> intersectionTasks = new ArrayList<>();
+        for (Map.Entry<UUID,Road> pair:roadMap.entrySet()) {
+            Future<NodeMove[]> futureNodeTask = threadPool.submit(() -> getRoads(pair.getValue()));
+            nodeTasks.add(futureNodeTask);
+        }
+        for (Map.Entry<UUID,Intersection> pair:intersectionMap.entrySet()) {
+            Future<IntersectionMove[]> futureIntersectionTask = threadPool.submit(() -> getIntersections(pair.getValue()));
+            intersectionTasks.add(futureIntersectionTask);
+        }
+        boolean nodeTaskBoolean = false;
+        boolean iterationTaskBoolean = false;
+        while(!nodeTaskBoolean && !iterationTaskBoolean){
+
+        }
     }
 
     void runCycle(){
 
+    }
+
+    NodeMove[] getRoads(Road road){
+        return new NodeMove[1];
+    }
+
+    IntersectionMove[] getIntersections(Intersection intersection){
+        return new IntersectionMove[1];
     }
 
     enum IntersectionMoveEnum {
@@ -58,13 +83,19 @@ public class UpdateManager {
         move2
     }
 
-    void buildNodeMove(UUID node, NodeMoveEnum move){
-        NodeMove nodeMove = new NodeMove(nodeDictionary.get(node), move);
+    public NodeMove buildNodeMove(UUID node, NodeMoveEnum move){
+        return new NodeMove(nodeMap.get(node), move);
+    }
+
+    void addNodeMove(NodeMove nodeMove){
         nodeMoveList.add(nodeMove);
     }
 
-    void buildIntersectionMove(UUID intersection, IntersectionMoveEnum move){
-        IntersectionMove intersectionMove = new IntersectionMove(intersectionDictionary.get(intersection), move);
+    public IntersectionMove buildIntersectionMove(UUID intersection, IntersectionMoveEnum move){
+        return new IntersectionMove(intersectionMap.get(intersection), move);
+    }
+
+    void buildIntersectionMove(IntersectionMove intersectionMove){
         intersectionMoveList.add(intersectionMove);
     }
 

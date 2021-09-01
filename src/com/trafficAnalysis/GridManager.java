@@ -1,5 +1,6 @@
 package com.trafficAnalysis;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GridManager {
@@ -10,6 +11,8 @@ public class GridManager {
 
     GridManager(){
         updateManager = new UpdateManager();
+        intersections = new ArrayList<>();
+        roads = new ArrayList<>();
     }
 
     void createIntersection(Road[] roadsArr){
