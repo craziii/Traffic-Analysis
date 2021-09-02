@@ -1,6 +1,7 @@
 package com.trafficAnalysis;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -10,11 +11,15 @@ public class UpdateManager {
     Map<UUID,Road> roadMap;
     Map<UUID,Intersection> intersectionMap;
 
+    long cycleCounter;
+
     List<NodeMove> nodeMoveList;
     List<IntersectionMove> intersectionMoveList;
 
     public UpdateManager(){
-
+        nodeMoveList = new ArrayList<>();
+        intersectionMoveList = new ArrayList<>();
+        cycleCounter = 0;
     }
 
     void addNodeToDictionary(UUID uuid, Node node){
@@ -30,6 +35,7 @@ public class UpdateManager {
     }
 
     void updateCycle(){
+        cycleError error = cycleError.noError;
         nodeMoveList.clear();
         intersectionMoveList.clear();
         ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -44,14 +50,66 @@ public class UpdateManager {
             intersectionTasks.add(futureIntersectionTask);
         }
         boolean nodeTaskBoolean = false;
-        boolean iterationTaskBoolean = false;
-        while(!nodeTaskBoolean && !iterationTaskBoolean){
-
+        boolean intersectionTaskBoolean = false;
+        while(!nodeTaskBoolean && !intersectionTaskBoolean){
+            if(!nodeTaskBoolean){
+                nodeTaskBoolean = checkNodeTasks(nodeTasks);
+            }
+            if(!intersectionTaskBoolean){
+                intersectionTaskBoolean = checkIntersectionTasks(intersectionTasks);
+            }
+        }
+        for (Future<NodeMove[]> task: nodeTasks) {
+            try {
+                nodeMoveList.addAll(Arrays.asList(task.get()));
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+                error = cycleError.nodeFutureError;
+            }
+        }
+        for (Future<IntersectionMove[]> task: intersectionTasks) {
+            try {
+                intersectionMoveList.addAll(Arrays.asList(task.get()));
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+                error = cycleError.intersectionFutureError;
+            }
+        }
+        if(error != cycleError.noError){
+            System.out.println("Cycle error at cycle: " + cycleCounter + ". Error caused by: " + error.name());
+        }
+        else{
+            runCycle();
         }
     }
 
-    void runCycle(){
+    enum cycleError{
+        noError,
+        nodeFutureError,
+        intersectionFutureError
+    }
 
+    boolean checkNodeTasks(List<Future<NodeMove[]>> tasks){
+        for (Future<NodeMove[]> task: tasks) {
+            if(!task.isDone()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    boolean checkIntersectionTasks(List<Future<IntersectionMove[]>> tasks){
+        for (Future<IntersectionMove[]> task: tasks) {
+            if(!task.isDone()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void runCycle(){
+        
+        cycleCounter++;
     }
 
     NodeMove[] getRoads(Road road){
