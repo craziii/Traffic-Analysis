@@ -1,16 +1,20 @@
 package com.trafficAnalysis;
 
+import java.util.UUID;
+
 public class Intersection {
-    private final Node inNorth;
-    private final Node inEast;
-    private final Node inSouth;
-    private final Node inWest;
-    private final Node outNorth;
-    private final Node outEast;
-    private final Node outSouth;
-    private final Node outWest;
+    private final UUID uuid;
+    private final Road inNorth;
+    private final Road inEast;
+    private final Road inSouth;
+    private final Road inWest;
+    private final Road outNorth;
+    private final Road outEast;
+    private final Road outSouth;
+    private final Road outWest;
 
     Intersection(IntersectionBuilder builder){
+        this.uuid = builder.uuidBuilder;
         this.inNorth = builder.inNorthBuilder;
         this.inEast = builder.inEastBuilder;
         this.inSouth = builder.inSouthBuilder;
@@ -25,88 +29,91 @@ public class Intersection {
 
     }
 
-    public Node getInNorth() {
+    public UUID getUuid(){ return uuid; }
+
+    public Road getInNorth() {
         return inNorth;
     }
 
-    public Node getInEast() {
+    public Road getInEast() {
         return inEast;
     }
 
-    public Node getInSouth() {
+    public Road getInSouth() {
         return inSouth;
     }
 
-    public Node getInWest() {
+    public Road getInWest() {
         return inWest;
     }
 
-    public Node getOutNorth() {
+    public Road getOutNorth() {
         return outNorth;
     }
 
-    public Node getOutEast() {
+    public Road getOutEast() {
         return outEast;
     }
 
-    public Node getOutSouth() {
+    public Road getOutSouth() {
         return outSouth;
     }
 
-    public Node getOutWest() {
+    public Road getOutWest() {
         return outWest;
     }
 
     public static class IntersectionBuilder{
-        private Node inNorthBuilder;
-        private Node inEastBuilder;
-        private Node inSouthBuilder;
-        private Node inWestBuilder;
-        private Node outNorthBuilder;
-        private Node outEastBuilder;
-        private Node outSouthBuilder;
-        private Node outWestBuilder;
+        private final UUID uuidBuilder;
+        private Road inNorthBuilder;
+        private Road inEastBuilder;
+        private Road inSouthBuilder;
+        private Road inWestBuilder;
+        private Road outNorthBuilder;
+        private Road outEastBuilder;
+        private Road outSouthBuilder;
+        private Road outWestBuilder;
 
         public IntersectionBuilder(){
-
+            uuidBuilder = UUID.randomUUID();
         }
 
-        public IntersectionBuilder inN(Node inN){
+        public IntersectionBuilder inN(Road inN){
             this.inNorthBuilder = inN;
             return this;
         }
 
-        public IntersectionBuilder inE(Node inE){
+        public IntersectionBuilder inE(Road inE){
             this.inEastBuilder = inE;
             return this;
         }
 
-        public IntersectionBuilder inS(Node inS){
+        public IntersectionBuilder inS(Road inS){
             this.inSouthBuilder = inS;
             return this;
         }
 
-        public IntersectionBuilder inW(Node inW){
+        public IntersectionBuilder inW(Road inW){
             this.inWestBuilder = inW;
             return this;
         }
 
-        public IntersectionBuilder outN(Node outN){
+        public IntersectionBuilder outN(Road outN){
             this.outNorthBuilder = outN;
             return this;
         }
 
-        public IntersectionBuilder outE(Node outE){
+        public IntersectionBuilder outE(Road outE){
             this.outEastBuilder = outE;
             return this;
         }
 
-        public IntersectionBuilder outS(Node outS){
+        public IntersectionBuilder outS(Road outS){
             this.outSouthBuilder = outS;
             return this;
         }
 
-        public IntersectionBuilder outW(Node outW){
+        public IntersectionBuilder outW(Road outW){
             this.outWestBuilder = outW;
             return this;
         }
