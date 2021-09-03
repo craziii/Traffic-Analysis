@@ -16,7 +16,7 @@ public class GridManager {
     }
 
     void createIntersection(Road[] roadsArr){
-        Intersection intersection = new Intersection.IntersectionBuilder().inN(roadsArr[0].getLastNode()).inE(roadsArr[1].getLastNode()).inS(roadsArr[2].getLastNode()).inW(roadsArr[3].getLastNode()).outN(roadsArr[4].getFirstNode()).outE(roadsArr[5].getFirstNode()).outS(roadsArr[6].getFirstNode()).outW(roadsArr[7].getFirstNode()).build();
+        Intersection intersection = new Intersection.IntersectionBuilder().inN(roadsArr[0]).inE(roadsArr[1]).inS(roadsArr[2]).inW(roadsArr[3]).outN(roadsArr[4]).outE(roadsArr[5]).outS(roadsArr[6]).outW(roadsArr[7]).build();
         intersections.add(intersection);
         updateManager.addIntersectionToDictionary(intersection.getUuid(),intersection);
     }

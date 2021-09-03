@@ -108,7 +108,7 @@ public class UpdateManager {
     }
 
     void runCycle(){
-        
+
         cycleCounter++;
     }
 
