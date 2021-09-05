@@ -5,16 +5,16 @@ import java.util.UUID;
 
 public class Road{
 
-    List<Node> nodesInRoad;
+    List<com.trafficAnalysis.Node> nodesInRoad;
 
     UUID uuid;
 
-    Node firstNode;
-    Node lastNode;
+    com.trafficAnalysis.Node firstNode;
+    com.trafficAnalysis.Node lastNode;
 
     public Road(int nodes){
         for(int i = 0; i < nodes; i++){
-            Node node = new Node();
+            com.trafficAnalysis.Node node = new com.trafficAnalysis.Node();
             addNodeToRoad(node);
         }
         organiseNodes();
@@ -23,7 +23,7 @@ public class Road{
 
     void organiseNodes(){
         for(int i = 0; i < nodesInRoad.size(); i++){
-            Node node = nodesInRoad.get(i);
+            com.trafficAnalysis.Node node = nodesInRoad.get(i);
             if(i != 0){
                 node.setNodeBefore(nodesInRoad.get(i-1));
             }
@@ -35,7 +35,7 @@ public class Road{
         setLastNode(nodesInRoad.get(nodesInRoad.size()-1));
     }
 
-    void addNodeToRoad(Node node){
+    void addNodeToRoad(com.trafficAnalysis.Node node){
         nodesInRoad.add(node);
     }
 
@@ -51,23 +51,23 @@ public class Road{
         return uuid;
     }
 
-    public Node[] getNodes(){
-        return (Node[]) nodesInRoad.toArray();
+    public com.trafficAnalysis.Node[] getNodes(){
+        return (com.trafficAnalysis.Node[]) nodesInRoad.toArray();
     }
 
-    public Node getFirstNode() {
+    public com.trafficAnalysis.Node getFirstNode() {
         return firstNode;
     }
 
-    public void setFirstNode(Node firstNode) {
+    public void setFirstNode(com.trafficAnalysis.Node firstNode) {
         this.firstNode = firstNode;
     }
 
-    public Node getLastNode() {
+    public com.trafficAnalysis.Node getLastNode() {
         return lastNode;
     }
 
-    public void setLastNode(Node lastNode) {
+    public void setLastNode(com.trafficAnalysis.Node lastNode) {
         this.lastNode = lastNode;
     }
 
