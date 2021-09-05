@@ -28,8 +28,8 @@ public class GridManager {
         documentNodes(road.getNodes());
     }
 
-    void documentNodes(Node[] nodes){
-        for (Node node : nodes){
+    void documentNodes(com.trafficAnalysis.Node[] nodes){
+        for (com.trafficAnalysis.Node node : nodes){
             updateManager.addNodeToDictionary(node.getUuid(), node);
         }
     }

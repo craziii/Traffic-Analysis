@@ -38,8 +38,8 @@ public class Intersection {
         
     }
 
-    UpdateManager.IntersectionMove createMove(Node node, char inDirection){
-        UpdateManager.IntersectionMoveEnum intersectionMoveEnum;
+    UpdateManager.IntersectionMove createMove(com.trafficAnalysis.Node node, char inDirection){
+        UpdateManager.IntersectionMoveEnum intersectionMoveEnum = UpdateManager.IntersectionMoveEnum.none;
         switch(intersectionType){
             case fourWay:  break;
             case threeWay: break;
