@@ -117,7 +117,7 @@ public class UpdateManager {
     }
 
     IntersectionMove[] getIntersections(Intersection intersection){
-        return new IntersectionMove[1];
+        return intersection.simulate();
     }
 
     enum IntersectionMoveEnum {
@@ -157,7 +157,7 @@ public class UpdateManager {
         intersectionMoveList.add(intersectionMove);
     }
 
-    private static class NodeMove {
+    public static class NodeMove {
         Node node;
         NodeMoveEnum move;
 
@@ -167,7 +167,7 @@ public class UpdateManager {
         }
     }
 
-    private static class IntersectionMove{
+    public static class IntersectionMove{
         Intersection intersection;
         IntersectionMoveEnum move;
 

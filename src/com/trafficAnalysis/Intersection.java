@@ -12,6 +12,10 @@ public class Intersection {
     private final Road outEast;
     private final Road outSouth;
     private final Road outWest;
+    
+    private boolean[] greenLights;
+    
+    private final IntersectionType intersectionType;
 
     Intersection(IntersectionBuilder builder){
         this.uuid = builder.uuidBuilder;
@@ -23,10 +27,32 @@ public class Intersection {
         this.outEast = builder.outEastBuilder;
         this.outSouth = builder.outSouthBuilder;
         this.outWest = builder.outWestBuilder;
+        this.intersectionType = builder.intersectionTypeBuilder;
     }
 
-    void simulate(){
+    UpdateManager.IntersectionMove[] simulate(){
+        
+    }
 
+    UpdateManager.IntersectionMove[] greenLight(){
+        
+    }
+
+    UpdateManager.IntersectionMove createMove(Node node, char inDirection){
+        UpdateManager.IntersectionMoveEnum intersectionMoveEnum;
+        switch(intersectionType){
+            case fourWay:  break;
+            case threeWay: break;
+            case twoWay: break;
+            default: break;
+        }
+        switch (inDirection){
+            case 'n': break;
+            case 'e': break;
+            case 's': break;
+            case 'w': break;
+        }
+        return new UpdateManager.IntersectionMove(this, intersectionMoveEnum);
     }
 
     public UUID getUuid(){ return uuid; }
@@ -62,6 +88,13 @@ public class Intersection {
     public Road getOutWest() {
         return outWest;
     }
+    
+    public enum IntersectionType{
+        none,
+        fourWay,
+        threeWay,
+        twoWay
+    }
 
     public static class IntersectionBuilder{
         private final UUID uuidBuilder;
@@ -73,9 +106,12 @@ public class Intersection {
         private Road outEastBuilder;
         private Road outSouthBuilder;
         private Road outWestBuilder;
+        
+        private IntersectionType intersectionTypeBuilder;
 
         public IntersectionBuilder(){
             uuidBuilder = UUID.randomUUID();
+            intersectionTypeBuilder = IntersectionType.none;
         }
 
         public IntersectionBuilder inN(Road inN){
@@ -118,10 +154,46 @@ public class Intersection {
             return this;
         }
 
+        public IntersectionBuilder intersectionType(IntersectionType intersectionType){
+            this.intersectionTypeBuilder = intersectionType;
+            return this;
+        }
+
         public Intersection build(){
+            if(intersectionTypeBuilder == IntersectionType.none){
+                generateType();
+            }
             Intersection intersection = new Intersection(this);
             validateIntersection(intersection);
             return intersection;
+        }
+
+        private void generateType(){
+            int nulls = 0;
+            nulls = getNulls(nulls, inNorthBuilder, inEastBuilder, inSouthBuilder, inWestBuilder);
+            nulls = getNulls(nulls, outNorthBuilder, outEastBuilder, outSouthBuilder, outWestBuilder);
+            switch (nulls){
+                case 4: intersectionType(IntersectionType.twoWay); break;
+                case 6: intersectionType(IntersectionType.threeWay); break;
+                case 8: intersectionType(IntersectionType.fourWay); break;
+                default: break;
+            }
+        }
+
+        private int getNulls(int nulls, Road n, Road e, Road s, Road w) {
+            if(n == null){
+                nulls++;
+            }
+            if(e == null){
+                nulls++;
+            }
+            if(s == null){
+                nulls++;
+            }
+            if(w == null){
+                nulls++;
+            }
+            return nulls;
         }
 
         private void validateIntersection(Intersection intersection){
@@ -132,7 +204,7 @@ public class Intersection {
                 System.out.println("Intersection validated correctly");
             }
             else{
-                System.out.println(stringBuilder.toString());
+                System.out.println(stringBuilder);
             }
 
         }
