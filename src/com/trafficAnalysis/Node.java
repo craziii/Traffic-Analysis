@@ -17,6 +17,7 @@ public class Node{
 
     public Node(float pressureOfNode){
         pressure = pressureOfNode;
+        createUuid();
     }
 
     public Node(Node nodeBeforeOrAfter, boolean isAfter){
@@ -74,7 +75,11 @@ public class Node{
     }
 
     void carWaiting(){
-
+        CarStatus nextNode = getNodeAfter().nodeStatus;
+        if(nextNode == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            moveCarSlowSpeed();
+        }
     }
 
     void carAnnoyed(){
