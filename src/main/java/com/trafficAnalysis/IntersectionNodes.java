@@ -1,4 +1,4 @@
-package com.traffic;
+package com.trafficAnalysis;
 
 public class IntersectionNodes{
     com.trafficAnalysis.Node north;
