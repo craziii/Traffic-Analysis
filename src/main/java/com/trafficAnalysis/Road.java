@@ -5,25 +5,28 @@ import java.util.UUID;
 
 public class Road{
 
-    List<com.trafficAnalysis.Node> nodesInRoad;
+    List<Node> nodesInRoad;
 
     UUID uuid;
 
-    com.trafficAnalysis.Node firstNode;
-    com.trafficAnalysis.Node lastNode;
+    Node firstNode;
+    Node lastNode;
+
+    float totalPressure;
 
     public Road(int nodes){
         for(int i = 0; i < nodes; i++){
-            com.trafficAnalysis.Node node = new com.trafficAnalysis.Node();
+            Node node = new Node();
             addNodeToRoad(node);
         }
         organiseNodes();
         uuid = UUID.randomUUID();
+        totalPressure = 0;
     }
 
     void organiseNodes(){
         for(int i = 0; i < nodesInRoad.size(); i++){
-            com.trafficAnalysis.Node node = nodesInRoad.get(i);
+            Node node = nodesInRoad.get(i);
             if(i != 0){
                 node.setNodeBefore(nodesInRoad.get(i-1));
             }
@@ -35,7 +38,15 @@ public class Road{
         setLastNode(nodesInRoad.get(nodesInRoad.size()-1));
     }
 
-    void addNodeToRoad(com.trafficAnalysis.Node node){
+    void getTotalPressure(){
+        float tempPressure = 0;
+        for (Node node:nodesInRoad) {
+            tempPressure = tempPressure + node.getPressure();
+        }
+        totalPressure = tempPressure;
+    }
+
+    void addNodeToRoad(Node node){
         nodesInRoad.add(node);
     }
 
@@ -51,23 +62,23 @@ public class Road{
         return uuid;
     }
 
-    public com.trafficAnalysis.Node[] getNodes(){
-        return (com.trafficAnalysis.Node[]) nodesInRoad.toArray();
+    public Node[] getNodes(){
+        return (Node[]) nodesInRoad.toArray();
     }
 
-    public com.trafficAnalysis.Node getFirstNode() {
+    public Node getFirstNode() {
         return firstNode;
     }
 
-    public void setFirstNode(com.trafficAnalysis.Node firstNode) {
+    public void setFirstNode(Node firstNode) {
         this.firstNode = firstNode;
     }
 
-    public com.trafficAnalysis.Node getLastNode() {
+    public Node getLastNode() {
         return lastNode;
     }
 
-    public void setLastNode(com.trafficAnalysis.Node lastNode) {
+    public void setLastNode(Node lastNode) {
         this.lastNode = lastNode;
     }
 

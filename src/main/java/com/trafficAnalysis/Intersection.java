@@ -1,5 +1,9 @@
 package com.trafficAnalysis;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Intersection {
@@ -12,8 +16,13 @@ public class Intersection {
     private final Road outEast;
     private final Road outSouth;
     private final Road outWest;
+
+    private final Road[] inRoads;
+    private final Road[] outRoads;
     
-    private boolean[] greenLights;
+    private boolean[] greenLights = {false,false,false,false};
+
+    private int stepCountdown = 0;
     
     private final IntersectionType intersectionType;
 
@@ -28,23 +37,28 @@ public class Intersection {
         this.outSouth = builder.outSouthBuilder;
         this.outWest = builder.outWestBuilder;
         this.intersectionType = builder.intersectionTypeBuilder;
+        this.inRoads = getRoads(true);
+        this.outRoads = getRoads(false);
+        updateGreenLights();
     }
 
-    UpdateManager.IntersectionMove[] simulate(){
-        
+
+
+    UpdateManager.IntersectionMove[] simulate(QuantumGenerator quantumGenerator){
+
     }
 
     UpdateManager.IntersectionMove[] greenLight(){
         
     }
 
-    UpdateManager.IntersectionMove createMove(com.trafficAnalysis.Node node, char inDirection){
+    UpdateManager.IntersectionMove createMove(Node node, char inDirection){
         UpdateManager.IntersectionMoveEnum intersectionMoveEnum = UpdateManager.IntersectionMoveEnum.none;
         switch(intersectionType){
             case fourWay:  break;
-            case threeWay: break;
-            case twoWay: break;
-            default: break;
+            case threeWay:  break;
+            case twoWay:  break;
+            default:  break;
         }
         switch (inDirection){
             case 'n': break;
@@ -53,6 +67,32 @@ public class Intersection {
             case 'w': break;
         }
         return new UpdateManager.IntersectionMove(this, intersectionMoveEnum);
+    }
+
+    void updateGreenLights(){
+        switch (intersectionType){
+            case fourWay: break;
+            case threeWay: break;
+            case twoWay: break;
+        }
+        
+    }
+
+    Road[] getRoads(boolean inRoads){
+        Road[] temp = new Road[4];
+        if(inRoads){
+            temp[0] = getInNorth();
+            temp[1] = getInEast();
+            temp[2] = getInSouth();
+            temp[3] = getInWest();
+        }
+        else{
+            temp[0] = getOutNorth();
+            temp[1] = getOutEast();
+            temp[2] = getOutSouth();
+            temp[3] = getOutWest();
+        }
+        return (Road[])Arrays.stream(temp).filter(Objects::nonNull).toArray();
     }
 
     public UUID getUuid(){ return uuid; }
@@ -174,8 +214,8 @@ public class Intersection {
             nulls = getNulls(nulls, outNorthBuilder, outEastBuilder, outSouthBuilder, outWestBuilder);
             switch (nulls){
                 case 4: intersectionType(IntersectionType.twoWay); break;
-                case 6: intersectionType(IntersectionType.threeWay); break;
-                case 8: intersectionType(IntersectionType.fourWay); break;
+                case 2: intersectionType(IntersectionType.threeWay); break;
+                case 0: intersectionType(IntersectionType.fourWay); break;
                 default: break;
             }
         }
