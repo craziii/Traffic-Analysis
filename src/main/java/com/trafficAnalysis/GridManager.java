@@ -5,6 +5,7 @@ import java.util.List;
 
 public class GridManager {
 
+    QuantumGenerator quantumGenerator;
     UpdateManager updateManager;
     List<Intersection> intersections;
     List<Road> roads;
