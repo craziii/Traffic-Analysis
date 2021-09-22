@@ -75,7 +75,7 @@ public class Intersection {
             case threeWay: break;
             case twoWay: break;
         }
-        
+
     }
 
     Road[] getRoads(boolean inRoads){

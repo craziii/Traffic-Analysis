@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis-2.main.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis-2.test.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Rotation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis-2.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/QuantumGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/QuantumGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +35,7 @@
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Traffic-Analysis-2" type="f1a62948:ProjectNode" />
+                <item name="Traffic-Analysis" type="f1a62948:ProjectNode" />
               </path>
             </expand>
             <select />
@@ -79,6 +81,17 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Traffic-Analysis-2 [dependencies]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -115,7 +128,10 @@
       <option name="presentableId" value="Default" />
       <updated>1630848645567</updated>
       <workItem from="1630848647158" duration="1516000" />
-      <workItem from="1630855368930" duration="7665000" />
+      <workItem from="1630855368930" duration="8527000" />
+      <workItem from="1631309994200" duration="1389000" />
+      <workItem from="1631477375118" duration="22000" />
+      <workItem from="1632326812090" duration="401000" />
     </task>
     <servers />
   </component>
@@ -132,5 +148,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
