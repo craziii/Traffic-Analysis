@@ -30,7 +30,7 @@
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Traffic-Analysis-2" type="f1a62948:ProjectNode" />
+                <item name="Traffic-Analysis" type="f1a62948:ProjectNode" />
               </path>
             </expand>
             <select />
@@ -81,6 +81,17 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Traffic-Analysis-2 [dependencies]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -117,7 +128,10 @@
       <option name="presentableId" value="Default" />
       <updated>1630848645567</updated>
       <workItem from="1630848647158" duration="1516000" />
-      <workItem from="1630855368930" duration="7665000" />
+      <workItem from="1630855368930" duration="8527000" />
+      <workItem from="1631309994200" duration="1389000" />
+      <workItem from="1631477375118" duration="22000" />
+      <workItem from="1632326812090" duration="401000" />
     </task>
     <servers />
   </component>
