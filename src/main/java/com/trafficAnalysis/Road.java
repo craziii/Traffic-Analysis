@@ -9,12 +9,24 @@ public class Road{
 
     UUID uuid;
 
+    Intersection inIntersection;
+    Intersection outIntersection;
+
     Node firstNode;
     Node lastNode;
 
     float totalPressure;
 
     public Road(int nodes){
+        setup(nodes);
+    }
+
+    public Road(int nodes, Intersection in, Intersection out){
+        setup(nodes);
+        attachToIntersection(in, out);
+    }
+
+    void setup(int nodes){
         for(int i = 0; i < nodes; i++){
             Node node = new Node();
             addNodeToRoad(node);
@@ -50,8 +62,9 @@ public class Road{
         nodesInRoad.add(node);
     }
 
-    void attachToIntersection(){
-
+    void attachToIntersection(Intersection in, Intersection out){
+        setInIntersection(in);
+        setOutIntersection(out);
     }
 
     void simulate(){
@@ -80,6 +93,22 @@ public class Road{
 
     public void setLastNode(Node lastNode) {
         this.lastNode = lastNode;
+    }
+
+    public Intersection getInIntersection() {
+        return inIntersection;
+    }
+
+    public void setInIntersection(Intersection inIntersection) {
+        this.inIntersection = inIntersection;
+    }
+
+    public Intersection getOutIntersection() {
+        return outIntersection;
+    }
+
+    public void setOutIntersection(Intersection outIntersection) {
+        this.outIntersection = outIntersection;
     }
 
 }
