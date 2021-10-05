@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/QuantumGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/QuantumGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis.test.iml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +47,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="intersection-update" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1xirFAz3n9w4Ye2knPm6WXBwWby" />
@@ -132,5 +134,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
