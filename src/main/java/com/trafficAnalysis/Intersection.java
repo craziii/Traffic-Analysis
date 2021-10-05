@@ -1,10 +1,12 @@
 package com.trafficAnalysis;
 
+import javax.lang.model.type.IntersectionType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class Intersection {
     private final UUID uuid;
@@ -41,6 +43,10 @@ public class Intersection {
         this.outRoads = getRoads(false);
         updateGreenLights();
     }
+
+    //<editor-fold desc="old code">
+
+    /*
 
     UpdateManager.IntersectionMove[] simulate(QuantumGenerator quantumGenerator, int[] cars){
         List<UpdateManager.IntersectionMove> outputs = new ArrayList<>();
@@ -106,6 +112,35 @@ public class Intersection {
         }
 
     }
+     */
+
+    //</editor-fold>
+
+    //<editor-fold desc="new code">
+
+
+
+
+    public boolean isLightGreen(Road parentRoad) {
+        if(getInNorth() == parentRoad){
+            return greenLights[0];
+        }
+        if(getInEast() == parentRoad){
+            return greenLights[1];
+        }
+        if(getInSouth() == parentRoad){
+            return greenLights[2];
+        }
+        if(getInWest() == parentRoad){
+            return greenLights[3];
+        }
+        else{
+            System.console().writer().println("ERROR: Road accessed incorrect intersection, road: "+parentRoad.getUuid()+ " is not connected to intersection: " + getUuid());
+            return false;
+        }
+    }
+
+    //</editor-fold>
 
     Road[] getRoads(boolean inRoads){
         Road[] temp = new Road[4];
@@ -157,7 +192,9 @@ public class Intersection {
     public Road getOutWest() {
         return outWest;
     }
-    
+
+
+
     public enum IntersectionType{
         none,
         fourWay,

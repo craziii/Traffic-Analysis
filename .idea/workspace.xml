@@ -5,12 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="intersection update">
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis-2.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/Traffic-Analysis-2.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
-    </list>
-    <list id="d0e44681-cbea-41c5-b3b5-fc0bf2c2a964" name="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" comment="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Node.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Road.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
     </list>
+    <list id="d0e44681-cbea-41c5-b3b5-fc0bf2c2a964" name="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" comment="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,10 +55,18 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="intersection-update" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1xirFAz3n9w4Ye2knPm6WXBwWby" />
   <component name="ProjectViewState">
@@ -83,13 +95,15 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -115,53 +129,6 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="Traffic-Analysis-2" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="Traffic-Analysis-2" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.Traffic-Analysis-2 [dependencies]" />
@@ -182,6 +149,7 @@
       <workItem from="1631309994200" duration="1389000" />
       <workItem from="1631477375118" duration="22000" />
       <workItem from="1632326812090" duration="401000" />
+      <workItem from="1633449343465" duration="7671000" />
     </task>
     <servers />
   </component>

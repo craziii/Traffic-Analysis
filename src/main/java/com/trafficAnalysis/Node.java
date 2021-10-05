@@ -5,6 +5,7 @@ import java.util.UUID;
 public class Node{
 
     Node[] beforeAfter = new Node[2];
+    Road parentRoad;
     UUID uuid;
     float pressure;
     CarStatus nodeStatus;
@@ -15,12 +16,13 @@ public class Node{
         nodeStatus = CarStatus.noCar;
     }
 
-    public Node(float pressureOfNode){
+    public Node(Road parent, float pressureOfNode){
         pressure = pressureOfNode;
         createUuid();
+        parentRoad = parent;
     }
 
-    public Node(Node nodeBeforeOrAfter, boolean isAfter){
+    public Node(Road parent, Node nodeBeforeOrAfter, boolean isAfter){
         if(isAfter){
             setNodeAfter(nodeBeforeOrAfter);
         }
@@ -28,12 +30,71 @@ public class Node{
             setNodeBefore(nodeBeforeOrAfter);
         }
         createUuid();
+        parentRoad = parent;
     }
 
-    public Node(Node nodeBefore, Node nodeAfter){
+    public Node(Road parent, Node nodeBefore, Node nodeAfter){
         setNodeBefore(nodeBefore);
         setNodeAfter(nodeAfter);
         createUuid();
+        parentRoad = parent;
+    }
+
+    //<editor-fold desc="old code">
+
+    /*
+
+    UpdateManager.NodeMove updatePressure(){
+        switch (nodeStatus){
+            case movingFullSpeed: return moveCarFullSpeed();
+            case movingSlowly: return moveCarSlowSpeed();
+            case waiting: return carWaiting();
+            case annoyed: return carAnnoyed();
+            default: return new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
+        }
+    }
+
+    UpdateManager.NodeMove moveCarFullSpeed(){
+        UpdateManager.NodeMove move = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
+        CarStatus[] nextNodes = {getNodeAfter().nodeStatus,getNodeAfter().getNodeAfter().nodeStatus};
+        if(nextNodes[0] == CarStatus.noCar && nextNodes[1] == CarStatus.noCar){
+            carEnteringNode(getNodeAfter().getNodeAfter());
+            carExitingNode();
+            move.move = UpdateManager.NodeMoveEnum.move2;
+            return move;
+        }
+        else if(nextNodes[0] == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            return moveCarSlowSpeed();
+        }
+        else{
+            setStatus(CarStatus.waiting);
+            return carWaiting();
+        }
+    }
+
+    UpdateManager.NodeMove moveCarSlowSpeed(){
+        UpdateManager.NodeMove move = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
+        CarStatus nextNode = getNodeAfter().nodeStatus;
+        if(nextNode == CarStatus.noCar){
+            carEnteringNode(getNodeAfter());
+            carExitingNode();
+            move.move = UpdateManager.NodeMoveEnum.move1;
+            return move;
+        }
+        else{
+            setStatus(CarStatus.waiting);
+            return carWaiting();
+        }
+    }
+
+    void carWaiting(){
+        CarStatus nextNode = getNodeAfter().nodeStatus;
+        if(nextNode == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            return moveCarSlowSpeed();
+        }
+        else if(pressure < )
     }
 
     void updatePressure(){
@@ -95,8 +156,137 @@ public class Node{
         }
     }
 
+     */
+
+    //</editor-fold>
+
+    //<editor-fold desc="new code">
+
+    UpdateManager.NodeMove getNextMove(){
+        UpdateManager.NodeMove output = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noCar);
+        raiseStatus();
+        switch (nodeStatus){
+            case movingFullSpeed: output.move = nextMoveMovingFullSpeed(); break;
+            case movingSlowly: output.move = nextMoveMovingSlowSpeed(); break;
+            case waiting: output.move = nextMoveWaiting(); break;
+            case annoyed: output.move = nextMoveAnnoyed(); break;
+            default: output.move = nextMoveNoCar(); break;
+        }
+        changePressure();
+        return output;
+    }
+
+    UpdateManager.NodeMoveEnum nextMoveMovingFullSpeed(){
+        //if the intersection is right ahead
+        if(getNodeAfter() == null){
+            return UpdateManager.NodeMoveEnum.move2;
+        }
+        Node[] nextNodes = new Node[2];
+        nextNodes[0] = getNodeAfter();
+        if(nextNodes[0].nodeStatus == CarStatus.noCar && nextNodes[0].getNodeAfter() == null){
+            return UpdateManager.NodeMoveEnum.move2;
+        }
+        nextNodes[1] = getNodeAfter().getNodeAfter();
+        //check 2 cars in front
+        if(nextNodes[0].nodeStatus == CarStatus.noCar && nextNodes[1].nodeStatus == CarStatus.noCar){
+            return UpdateManager.NodeMoveEnum.move2;
+        }
+        //check 1 car in front
+        if(nextNodes[0].nodeStatus == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            return nextMoveMovingSlowSpeed();
+        }
+        //force car to wait
+        else{
+            setStatus(CarStatus.waiting);
+            return nextMoveWaiting();
+        }
+    }
+
+    UpdateManager.NodeMoveEnum nextMoveMovingSlowSpeed(){
+        if(getNodeAfter() == null && checkGreenLight()){
+            return UpdateManager.NodeMoveEnum.move1;
+        }
+        else if(getNodeAfter().nodeStatus == CarStatus.noCar){
+            return UpdateManager.NodeMoveEnum.move1;
+        }
+        else{
+            setStatus(CarStatus.waiting);
+            return nextMoveWaiting();
+        }
+    }
+
+    UpdateManager.NodeMoveEnum nextMoveWaiting(){
+        if(getNodeAfter() == null && checkGreenLight()){
+            setStatus(CarStatus.movingSlowly);
+            return nextMoveMovingSlowSpeed();
+        }
+        else if(getNodeAfter().nodeStatus == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            return nextMoveMovingSlowSpeed();
+        }
+        else if(getPressure() > GridManager.WAITING_THRESHOLD_PRESSURE){
+            setStatus(CarStatus.annoyed);
+            return nextMoveAnnoyed();
+        }
+        else{
+            return UpdateManager.NodeMoveEnum.noMove;
+        }
+    }
+
+    UpdateManager.NodeMoveEnum nextMoveAnnoyed(){
+        if(getNodeAfter() == null && checkGreenLight()){
+            setStatus(CarStatus.movingSlowly);
+            return nextMoveMovingSlowSpeed();
+        }
+        else if(getNodeAfter().nodeStatus == CarStatus.noCar){
+            setStatus(CarStatus.movingSlowly);
+            return nextMoveMovingSlowSpeed();
+        }
+        else{
+            return UpdateManager.NodeMoveEnum.noMove;
+        }
+    }
+
+    UpdateManager.NodeMoveEnum nextMoveNoCar(){
+        return UpdateManager.NodeMoveEnum.noCar;
+    }
+
+    void raiseStatus(){
+        switch(nodeStatus){
+            case movingSlowly: setStatus(CarStatus.movingFullSpeed); break;
+            case waiting: setStatus(CarStatus.movingSlowly); break;
+        }
+    }
+
+    private void changePressure() {
+        switch(nodeStatus){
+            case movingFullSpeed: setPressure(getPressure()+GridManager.FULL_SPEED_PRESSURE_RATE); break;
+            case movingSlowly: setPressure(getPressure()+GridManager.SLOW_SPEED_PRESSURE_RATE); break;
+            case waiting: setPressure(getPressure()+GridManager.WAITING_PRESSURE_RATE); break;
+            case annoyed: setPressure(getPressure()+GridManager.ANNOYED_PRESSURE_RATE); break;
+            case noCar: setPressure(getPressure()+GridManager.NO_CAR_PRESSURE_RATE); break;
+        }
+    }
+
+
+
+    boolean checkGreenLight(){
+        return parentRoad.outIntersection.isLightGreen(parentRoad);
+    }
+
+    //</editor-fold>
+
+    void carEnteringNode(){
+        carEnteringNode(CarStatus.movingFullSpeed);
+    }
+
+    void carEnteringNode(CarStatus type){
+        setStatus(type);
+    }
+
     void carExitingNode(){
-        nodeStatus = CarStatus.noCar;
+        setStatus(CarStatus.noCar);
     }
 
     public void setStatus(CarStatus status){
@@ -132,7 +322,12 @@ public class Node{
     }
 
     void setPressure(float p){
-        pressure = p;
+        if(p < GridManager.LOWEST_PRESSURE){
+            pressure = 0;
+        }
+        else{
+            pressure = p;
+        }
     }
 
     public enum CarStatus{
