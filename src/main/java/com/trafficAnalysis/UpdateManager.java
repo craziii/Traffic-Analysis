@@ -196,7 +196,10 @@ public class UpdateManager {
             }
             for(int i = 0; i < count; i++){
                 if(!intersection.isEmpty()){
-                    intersectionMoveList.add(intersection.getNextIntersectionOutput(quantumGenerator));
+                    IntersectionMove tempIntersectionMove = intersection.getNextIntersectionOutput(quantumGenerator);
+                    if(tempIntersectionMove != null){
+                        intersectionMoveList.add(tempIntersectionMove);
+                    }
                 }
                 else{
                     break;
@@ -204,9 +207,7 @@ public class UpdateManager {
             }
         }
         //TODO:STEP 4 - Pass movement information back to nodes
-        for(IntersectionMove im:intersectionMoveList){
-
-        }
+        //Done inside simulations
         //TODO:STEP 5 - Move cars in nodes
         for (NodeMove nm:nodeMoveList) {
             switch(nm.move){

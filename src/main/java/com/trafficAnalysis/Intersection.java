@@ -147,10 +147,7 @@ public class Intersection {
     }
 
     public boolean hasSpaceForCars(){
-        if(carsInIntersection.size() >= maxCars){
-            return false;
-        }
-        return true;
+        return carsInIntersection.size() < maxCars;
     }
 
     public boolean isEmpty(){
@@ -199,7 +196,13 @@ public class Intersection {
                 case west: temp.move = UpdateManager.IntersectionMoveEnum.westToSouth; break;
             }
         }
-        return temp;
+        if(validIntersectionOutput(temp.move)){
+            return temp;
+        }
+        else{
+            carsInIntersection.add(tempInput);
+        }
+        return null;
     }
 
     void updateGreenLights(boolean firstTime){
@@ -209,6 +212,44 @@ public class Intersection {
         else{
 
         }
+    }
+
+    boolean validIntersectionOutput(UpdateManager.IntersectionMoveEnum output){
+        switch(output){
+            case eastToNorth:
+            case southToNorth:
+            case westToNorth:
+                if (setCarAtNode(outNorth)) return true;
+                break;
+            case northToEast:
+            case southToEast:
+            case westToEast:
+                if (setCarAtNode(outEast)) return true;
+                break;
+            case northToSouth:
+            case eastToSouth:
+            case westToSouth:
+                if (setCarAtNode(outSouth)) return true;
+                break;
+            case northToWest:
+            case eastToWest:
+            case southToWest:
+                if (setCarAtNode(outWest)) return true;
+                break;
+        }
+        return false;
+    }
+
+    private boolean setCarAtNode(Road outRoad) {
+        if(outRoad.firstNode.nodeStatus == Node.CarStatus.noCar && outRoad.firstNode.getNodeAfter().nodeStatus == Node.CarStatus.noCar){
+            outRoad.firstNode.getNodeAfter().setStatus(Node.CarStatus.waiting);
+            return true;
+        }
+        else if(outRoad.firstNode.nodeStatus == Node.CarStatus.noCar){
+            outRoad.firstNode.setStatus(Node.CarStatus.waiting);
+            return true;
+        }
+        return false;
     }
 
     //</editor-fold>
