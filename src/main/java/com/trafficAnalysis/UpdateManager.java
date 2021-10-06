@@ -13,13 +13,16 @@ public class UpdateManager {
 
     long cycleCounter;
 
+    QuantumGenerator quantumGenerator;
+
     List<NodeMove> nodeMoveList;
     List<IntersectionMove> intersectionMoveList;
 
-    public UpdateManager(){
+    public UpdateManager(QuantumGenerator qg){
         nodeMoveList = new ArrayList<>();
         intersectionMoveList = new ArrayList<>();
         cycleCounter = 0;
+        quantumGenerator = qg;
     }
 
     void addNodeToMap(UUID uuid, Node node){
@@ -152,15 +155,65 @@ public class UpdateManager {
             }
         }
         //TODO:STEP 2 - Move this info to Intersections to decide if some moves cannot be made
-
+        List<NodeMove> intersectionTest = new ArrayList<>();
+        for (NodeMove nm:nodeMoveList) {
+            if(nm.move == NodeMoveEnum.moveI1){
+                intersectionTest.add(nm);
+            }
+        }
+        for (NodeMove nm:nodeMoveList) {
+            if(nm.move == NodeMoveEnum.moveI2){
+                intersectionTest.add(nm);
+            }
+        }
+        for (NodeMove nm:intersectionTest) {
+            if(nm.node.parentRoad.outIntersection.hasSpaceForCars()){
+                nodeMoveList.remove(nm);
+                nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+            }
+            else{
+                NodeMove temp = nm;
+                if(nm.move == NodeMoveEnum.moveI2){
+                    temp.move = NodeMoveEnum.move1;
+                }
+                else{
+                    temp.move = NodeMoveEnum.noMove;
+                }
+                nodeMoveList.set(nodeMoveList.indexOf(nm),temp);
+            }
+        }
         //TODO:STEP 3 - Simulate Movement through intersections
-
+        for (Intersection intersection:intersectionMap.values()) {
+            int count = 0;
+            switch (intersection.getIntersectionType()){
+                case twoWay: count = 2; break;
+                case threeWay: count = 3; break;
+                case fourWay: count = 4; break;
+            }
+            for(int i = 0; i < count; i++){
+                if(!intersection.isEmpty()){
+                    intersectionMoveList.add(intersection.getNextIntersectionOutput(quantumGenerator));
+                }
+                else{
+                    break;
+                }
+            }
+        }
         //TODO:STEP 4 - Pass movement information back to nodes
+        for(IntersectionMove im:intersectionMoveList){
 
+        }
         //TODO:STEP 5 - Move cars in nodes
-
+        for (NodeMove nm:nodeMoveList) {
+            switch(nm.move){
+                case move1: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly); break;
+                case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
+            }
+        }
         //TODO:STEP 6 - Update lights for next step
-
+        for(Intersection intersection:intersectionMap.values()){
+            intersection.updateGreenLights(false);
+        }
     }
 
     NodeMove[] getWantedMovement(Road road){
@@ -198,6 +251,8 @@ public class UpdateManager {
         noMove,
         move1,
         move2,
+        moveI1,
+        moveI2,
         noCar
     }
 

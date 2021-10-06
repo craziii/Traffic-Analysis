@@ -19,7 +19,21 @@ public class GridManager {
     List<Road> roads;
 
     GridManager(){
-        updateManager = new UpdateManager();
+        setup(Double.MIN_VALUE);
+    }
+
+    GridManager(double chance){
+        setup(chance);
+    }
+
+    void setup(double chance){
+        if(chance == Double.MIN_VALUE){
+            quantumGenerator = new QuantumGenerator();
+        }
+        else{
+            quantumGenerator = new QuantumGenerator(chance);
+        }
+        updateManager = new UpdateManager(quantumGenerator);
         intersections = new ArrayList<>();
         roads = new ArrayList<>();
     }

@@ -1,10 +1,13 @@
 package com.trafficAnalysis;
 
 import javax.lang.model.type.IntersectionType;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -24,8 +27,11 @@ public class Intersection {
     
     private boolean[] greenLights = {false,false,false,false};
 
+    private int maxCars = 8;
+    private Queue<CarInput> carsInIntersection = new ArrayDeque<>();
+
     private int stepCountdown = 0;
-    
+
     private final IntersectionType intersectionType;
 
     Intersection(IntersectionBuilder builder){
@@ -41,7 +47,7 @@ public class Intersection {
         this.intersectionType = builder.intersectionTypeBuilder;
         this.inRoads = getRoads(true);
         this.outRoads = getRoads(false);
-        updateGreenLights();
+        updateGreenLights(true);
     }
 
     //<editor-fold desc="old code">
@@ -140,6 +146,71 @@ public class Intersection {
         }
     }
 
+    public boolean hasSpaceForCars(){
+        if(carsInIntersection.size() >= maxCars){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isEmpty(){
+        return carsInIntersection.size() == 0;
+    }
+
+    public void addCar(Road inputDirection){
+        if(getInNorth() == inputDirection){
+            carsInIntersection.add(CarInput.north);
+        }
+        if(getInEast() == inputDirection){
+            carsInIntersection.add(CarInput.east);
+        }
+        if(getInSouth() == inputDirection){
+            carsInIntersection.add(CarInput.south);
+        }
+        if(getInWest() == inputDirection){
+            carsInIntersection.add(CarInput.west);
+        }
+    }
+
+    UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator){
+        CarInput tempInput = carsInIntersection.remove();
+        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.IntersectionMoveEnum.none);
+        if(quantumGenerator.getNextBoolean()){ // First, go straight
+            switch (tempInput){
+                case north: temp.move = UpdateManager.IntersectionMoveEnum.northToSouth; break;
+                case east: temp.move = UpdateManager.IntersectionMoveEnum.eastToWest; break;
+                case south: temp.move = UpdateManager.IntersectionMoveEnum.southToNorth; break;
+                case west: temp.move = UpdateManager.IntersectionMoveEnum.westToEast; break;
+            }
+        }
+        else if(quantumGenerator.getNextBoolean()){ // Second, left turn
+            switch (tempInput){
+                case north: temp.move = UpdateManager.IntersectionMoveEnum.northToEast; break;
+                case east: temp.move = UpdateManager.IntersectionMoveEnum.eastToSouth; break;
+                case south: temp.move = UpdateManager.IntersectionMoveEnum.southToWest; break;
+                case west: temp.move = UpdateManager.IntersectionMoveEnum.westToNorth; break;
+            }
+        }
+        else{ // Finally, right turn
+            switch (tempInput){
+                case north: temp.move = UpdateManager.IntersectionMoveEnum.northToWest; break;
+                case east: temp.move = UpdateManager.IntersectionMoveEnum.eastToNorth; break;
+                case south: temp.move = UpdateManager.IntersectionMoveEnum.southToEast; break;
+                case west: temp.move = UpdateManager.IntersectionMoveEnum.westToSouth; break;
+            }
+        }
+        return temp;
+    }
+
+    void updateGreenLights(boolean firstTime){
+        if(firstTime){
+
+        }
+        else{
+
+        }
+    }
+
     //</editor-fold>
 
     Road[] getRoads(boolean inRoads){
@@ -193,7 +264,16 @@ public class Intersection {
         return outWest;
     }
 
+    public IntersectionType getIntersectionType() {
+        return intersectionType;
+    }
 
+    private enum CarInput{
+        north,
+        east,
+        south,
+        west
+    }
 
     public enum IntersectionType{
         none,

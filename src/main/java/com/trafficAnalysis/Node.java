@@ -179,12 +179,12 @@ public class Node{
     UpdateManager.NodeMoveEnum nextMoveMovingFullSpeed(){
         //if the intersection is right ahead
         if(getNodeAfter() == null){
-            return UpdateManager.NodeMoveEnum.move2;
+            return UpdateManager.NodeMoveEnum.moveI1;
         }
         Node[] nextNodes = new Node[2];
         nextNodes[0] = getNodeAfter();
         if(nextNodes[0].nodeStatus == CarStatus.noCar && nextNodes[0].getNodeAfter() == null){
-            return UpdateManager.NodeMoveEnum.move2;
+            return UpdateManager.NodeMoveEnum.moveI2;
         }
         nextNodes[1] = getNodeAfter().getNodeAfter();
         //check 2 cars in front
@@ -205,7 +205,7 @@ public class Node{
 
     UpdateManager.NodeMoveEnum nextMoveMovingSlowSpeed(){
         if(getNodeAfter() == null && checkGreenLight()){
-            return UpdateManager.NodeMoveEnum.move1;
+            return UpdateManager.NodeMoveEnum.moveI1;
         }
         else if(getNodeAfter().nodeStatus == CarStatus.noCar){
             return UpdateManager.NodeMoveEnum.move1;
