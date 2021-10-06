@@ -58,11 +58,12 @@ public class GridManager {
     }
 
     void simulateStep(){
-        for (Intersection intersection : intersections) {
-            intersection.simulate();
-        }
-        for (Road road : roads) {
-            road.simulate();
+        updateManager.runStep();
+    }
+
+    void simulateSteps(long steps){
+        for(long i = 0; i < steps; i++){
+            updateManager.runStep();
         }
     }
 }

@@ -133,6 +133,10 @@ public class UpdateManager {
 
     //<editor-fold desc="new code">
 
+    public void runStep(){
+        updateCycle();
+    }
+
     void updateCycle(){
         nodeMoveList.clear();
         intersectionMoveList.clear();

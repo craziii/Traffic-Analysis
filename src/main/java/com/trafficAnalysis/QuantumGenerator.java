@@ -42,13 +42,29 @@ public class QuantumGenerator {
     }
 
     public boolean getNextBoolean(){
-        Result result = sqee.runProgram(programBoolean);
-        Qubit qubit = result.getQubits()[0];
-        switch (qubit.measure()){
-            case 0: return false;
-            case 1: return true;
+        return getNextBoolean(0);
+    }
+
+    public boolean getNextBoolean(int count){
+        try {
+            Result result = sqee.runProgram(programBoolean);
+            Qubit qubit = result.getQubits()[0];
+            switch (qubit.measure()) {
+                case 0:
+                    return false;
+                case 1:
+                    return true;
+            }
         }
-        return false;
+        catch(Exception e){
+            //e.printStackTrace();
+        }
+        if(count > 5){
+            return false;
+        }
+        else{
+            return getNextBoolean(count+1);
+        }
     }
 
     public float getNextFloat(){
