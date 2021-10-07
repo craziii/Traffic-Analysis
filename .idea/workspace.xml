@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="Update Service Rewrite, Step 1">
+    <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="Update Service Rewrite, Step 4-5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
     </list>
@@ -144,7 +145,7 @@
       <workItem from="1631309994200" duration="1389000" />
       <workItem from="1631477375118" duration="22000" />
       <workItem from="1632326812090" duration="401000" />
-      <workItem from="1633449343465" duration="17269000" />
+      <workItem from="1633449343465" duration="22153000" />
     </task>
     <task id="LOCAL-00001" summary="Update Service Rewrite, Step 1">
       <created>1633465479291</created>
@@ -153,7 +154,14 @@
       <option name="project" value="LOCAL" />
       <updated>1633465479291</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update Service Rewrite, Step 4-5">
+      <created>1633515826045</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1633515826045</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -174,6 +182,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="intersection update" />
     <MESSAGE value="Update Service Rewrite, Step 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Service Rewrite, Step 1" />
+    <MESSAGE value="Update Service Rewrite, Step 4-5" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Service Rewrite, Step 4-5" />
   </component>
 </project>

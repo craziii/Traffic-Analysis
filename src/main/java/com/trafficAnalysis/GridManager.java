@@ -39,7 +39,7 @@ public class GridManager {
     }
 
     void createIntersection(Road[] roadsArr){
-        Intersection intersection = new Intersection.IntersectionBuilder().inN(roadsArr[0]).inE(roadsArr[1]).inS(roadsArr[2]).inW(roadsArr[3]).outN(roadsArr[4]).outE(roadsArr[5]).outS(roadsArr[6]).outW(roadsArr[7]).build();
+        Intersection intersection = new Intersection.IntersectionBuilder().in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).build();
         intersections.add(intersection);
         updateManager.addIntersectionToMap(intersection.getUuid(),intersection);
     }

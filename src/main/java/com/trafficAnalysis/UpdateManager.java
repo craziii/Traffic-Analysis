@@ -238,18 +238,10 @@ public class UpdateManager {
 
     enum IntersectionMoveEnum {
         none,
-        northToEast,
-        northToSouth,
-        northToWest,
-        eastToSouth,
-        eastToWest,
-        eastToNorth,
-        southToWest,
-        southToNorth,
-        southToEast,
-        westToNorth,
-        westToEast,
-        westToSouth
+        north,
+        east,
+        south,
+        west
     }
 
     enum NodeMoveEnum {
@@ -269,8 +261,8 @@ public class UpdateManager {
         nodeMoveList.add(nodeMove);
     }
 
-    public IntersectionMove buildIntersectionMove(UUID intersection, IntersectionMoveEnum move){
-        return new IntersectionMove(intersectionMap.get(intersection), move);
+    public IntersectionMove buildIntersectionMove(UUID intersection, IntersectionMoveEnum in, IntersectionMoveEnum out){
+        return new IntersectionMove(intersectionMap.get(intersection), in, out);
     }
 
     void addIntersectionMove(IntersectionMove intersectionMove){
@@ -289,11 +281,13 @@ public class UpdateManager {
 
     public static class IntersectionMove{
         Intersection intersection;
-        IntersectionMoveEnum move;
+        IntersectionMoveEnum in;
+        IntersectionMoveEnum out;
 
-        IntersectionMove(Intersection i, IntersectionMoveEnum m){
+        IntersectionMove(Intersection i, IntersectionMoveEnum _in, IntersectionMoveEnum _out){
             intersection = i;
-            move = m;
+            in = _in;
+            out = _out;
         }
     }
 }
