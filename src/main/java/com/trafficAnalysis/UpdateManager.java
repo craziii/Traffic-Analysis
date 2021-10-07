@@ -37,102 +37,6 @@ public class UpdateManager {
         intersectionMap.put(uuid, intersection);
     }
 
-    //<editor-fold desc="old code">
-
-    /*
-
-    void updateCycle(){
-        cycleError error = cycleError.noError;
-        nodeMoveList.clear();
-        intersectionMoveList.clear();
-        ExecutorService threadPool = Executors.newCachedThreadPool();
-        List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
-        List<Future<IntersectionMove[]>> intersectionTasks = new ArrayList<>();
-        for (Map.Entry<UUID, Road> pair:roadMap.entrySet()) {
-            Future<NodeMove[]> futureNodeTask = threadPool.submit(() -> getRoads(pair.getValue()));
-            nodeTasks.add(futureNodeTask);
-        }
-        for (Map.Entry<UUID, Intersection> pair:intersectionMap.entrySet()) {
-            Future<IntersectionMove[]> futureIntersectionTask = threadPool.submit(() -> getIntersections(pair.getValue()));
-            intersectionTasks.add(futureIntersectionTask);
-        }
-        boolean nodeTaskBoolean = false;
-        boolean intersectionTaskBoolean = false;
-        while(!nodeTaskBoolean && !intersectionTaskBoolean){
-            if(!nodeTaskBoolean){
-                nodeTaskBoolean = checkNodeTasks(nodeTasks);
-            }
-            if(!intersectionTaskBoolean){
-                intersectionTaskBoolean = checkIntersectionTasks(intersectionTasks);
-            }
-        }
-        for (Future<NodeMove[]> task: nodeTasks) {
-            try {
-                nodeMoveList.addAll(Arrays.asList(task.get()));
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                error = cycleError.nodeFutureError;
-            }
-        }
-        for (Future<IntersectionMove[]> task: intersectionTasks) {
-            try {
-                intersectionMoveList.addAll(Arrays.asList(task.get()));
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                error = cycleError.intersectionFutureError;
-            }
-        }
-        if(error != cycleError.noError){
-            System.out.println("Cycle error at cycle: " + cycleCounter + ". Error caused by: " + error.name());
-        }
-        else{
-            runCycle();
-        }
-    }
-
-    enum cycleError{
-        noError,
-        nodeFutureError,
-        intersectionFutureError
-    }
-
-    boolean checkNodeTasks(List<Future<NodeMove[]>> tasks){
-        for (Future<NodeMove[]> task: tasks) {
-            if(!task.isDone()){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    boolean checkIntersectionTasks(List<Future<IntersectionMove[]>> tasks){
-        for (Future<IntersectionMove[]> task: tasks) {
-            if(!task.isDone()){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void runCycle(){
-
-        cycleCounter++;
-    }
-
-    NodeMove[] getRoads(Road road){
-        return road.simulate();
-    }
-
-    IntersectionMove[] getIntersections(Intersection intersection){
-        return intersection.simulate();
-    }
-
-     */
-
-    //</editor-fold>
-
-    //<editor-fold desc="new code">
-
     public void runStep(){
         updateCycle();
     }
@@ -233,8 +137,6 @@ public class UpdateManager {
         }
         return true;
     }
-
-    //</editor-fold>
 
     enum IntersectionMoveEnum {
         none,

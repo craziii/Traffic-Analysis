@@ -40,128 +40,6 @@ public class Node{
         parentRoad = parent;
     }
 
-    //<editor-fold desc="old code">
-
-    /*
-
-    UpdateManager.NodeMove updatePressure(){
-        switch (nodeStatus){
-            case movingFullSpeed: return moveCarFullSpeed();
-            case movingSlowly: return moveCarSlowSpeed();
-            case waiting: return carWaiting();
-            case annoyed: return carAnnoyed();
-            default: return new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
-        }
-    }
-
-    UpdateManager.NodeMove moveCarFullSpeed(){
-        UpdateManager.NodeMove move = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
-        CarStatus[] nextNodes = {getNodeAfter().nodeStatus,getNodeAfter().getNodeAfter().nodeStatus};
-        if(nextNodes[0] == CarStatus.noCar && nextNodes[1] == CarStatus.noCar){
-            carEnteringNode(getNodeAfter().getNodeAfter());
-            carExitingNode();
-            move.move = UpdateManager.NodeMoveEnum.move2;
-            return move;
-        }
-        else if(nextNodes[0] == CarStatus.noCar){
-            setStatus(CarStatus.movingSlowly);
-            return moveCarSlowSpeed();
-        }
-        else{
-            setStatus(CarStatus.waiting);
-            return carWaiting();
-        }
-    }
-
-    UpdateManager.NodeMove moveCarSlowSpeed(){
-        UpdateManager.NodeMove move = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noMove);
-        CarStatus nextNode = getNodeAfter().nodeStatus;
-        if(nextNode == CarStatus.noCar){
-            carEnteringNode(getNodeAfter());
-            carExitingNode();
-            move.move = UpdateManager.NodeMoveEnum.move1;
-            return move;
-        }
-        else{
-            setStatus(CarStatus.waiting);
-            return carWaiting();
-        }
-    }
-
-    void carWaiting(){
-        CarStatus nextNode = getNodeAfter().nodeStatus;
-        if(nextNode == CarStatus.noCar){
-            setStatus(CarStatus.movingSlowly);
-            return moveCarSlowSpeed();
-        }
-        else if(pressure < )
-    }
-
-    void updatePressure(){
-        switch (nodeStatus){
-            case noCar: break;
-            case movingFullSpeed: moveCarFullSpeed(); break;
-            case movingSlowly: moveCarSlowSpeed(); break;
-            case waiting: carWaiting(); break;
-            case annoyed: carAnnoyed(); break;
-        }
-    }
-
-    void moveCarFullSpeed(){
-        CarStatus[] nextNodes = {getNodeAfter().nodeStatus,getNodeAfter().getNodeAfter().nodeStatus};
-        if(nextNodes[0] == CarStatus.noCar && nextNodes[1] == CarStatus.noCar){
-            carEnteringNode(getNodeAfter().getNodeAfter());
-            carExitingNode();
-        }
-        else if(nextNodes[0] == CarStatus.noCar){
-            setStatus(CarStatus.movingSlowly);
-            moveCarSlowSpeed();
-        }
-        else{
-            setStatus(CarStatus.waiting);
-            carWaiting();
-        }
-    }
-
-    void moveCarSlowSpeed(){
-        CarStatus nextNode = getNodeAfter().nodeStatus;
-        if(nextNode == CarStatus.noCar){
-            carEnteringNode(getNodeAfter());
-            carExitingNode();
-        }
-        else{
-            setStatus(CarStatus.waiting);
-            carWaiting();
-        }
-    }
-
-    void carWaiting(){
-        CarStatus nextNode = getNodeAfter().nodeStatus;
-        if(nextNode == CarStatus.noCar){
-            setStatus(CarStatus.movingSlowly);
-            moveCarSlowSpeed();
-        }
-    }
-
-    void carAnnoyed(){
-
-    }
-
-    void carEnteringNode(Node entryPoint){
-        if(entryPoint == getNodeBefore()){
-            nodeStatus = CarStatus.movingSlowly;
-        }
-        else{
-            nodeStatus = CarStatus.movingFullSpeed;
-        }
-    }
-
-     */
-
-    //</editor-fold>
-
-    //<editor-fold desc="new code">
-
     UpdateManager.NodeMove getNextMove(){
         UpdateManager.NodeMove output = new UpdateManager.NodeMove(this, UpdateManager.NodeMoveEnum.noCar);
         raiseStatus();
@@ -269,13 +147,9 @@ public class Node{
         }
     }
 
-
-
     boolean checkGreenLight(){
         return parentRoad.outIntersection.isLightGreen(parentRoad);
     }
-
-    //</editor-fold>
 
     void carEnteringNode(){
         carEnteringNode(CarStatus.movingFullSpeed);

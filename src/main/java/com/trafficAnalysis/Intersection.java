@@ -34,83 +34,6 @@ public class Intersection {
         updateGreenLights(true);
     }
 
-    //<editor-fold desc="old code">
-
-    /*
-
-    UpdateManager.IntersectionMove[] simulate(QuantumGenerator quantumGenerator, int[] cars){
-        List<UpdateManager.IntersectionMove> outputs = new ArrayList<>();
-        for(int i = 0; i < cars.length; i++){
-            for(int j = 0; j < cars[i]; j++){
-                UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.IntersectionMoveEnum.northToEast);
-                if(quantumGenerator.getNextBoolean()){ // First, go straight
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToSouth; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToWest; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToNorth; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToEast; break;
-                    }
-                }
-                else if(quantumGenerator.getNextBoolean()){ // Second, left turn
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToEast; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToSouth; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToWest; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToNorth; break;
-                    }
-                }
-                else{ // Finally, right turn
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToWest; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToNorth; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToEast; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToSouth; break;
-                    }
-                }
-                outputs.add(temp);
-            }
-        }
-        return outputs.toArray(new UpdateManager.IntersectionMove[0]);
-    }
-
-    UpdateManager.IntersectionMove[] greenLight(){
-        
-    }
-
-    UpdateManager.IntersectionMove createMove(Node node, char inDirection){
-        UpdateManager.IntersectionMoveEnum intersectionMoveEnum = UpdateManager.IntersectionMoveEnum.none;
-        switch(intersectionType){
-            case fourWay:  break;
-            case threeWay:  break;
-            case twoWay:  break;
-            default:  break;
-        }
-        switch (inDirection){
-            case 'n': break;
-            case 'e': break;
-            case 's': break;
-            case 'w': break;
-        }
-        return new UpdateManager.IntersectionMove(this, intersectionMoveEnum);
-    }
-
-    void updateGreenLights(){
-        switch (intersectionType){
-            case fourWay: break;
-            case threeWay: break;
-            case twoWay: break;
-        }
-
-    }
-     */
-
-    //</editor-fold>
-
-    //<editor-fold desc="new code">
-
-
-
-
     public boolean isLightGreen(Road parentRoad) {
         for(int i = 0; i < inRoads.length; i++){
             if(inRoads[i] == parentRoad){
@@ -282,8 +205,6 @@ public class Intersection {
         }
         return false;
     }
-
-    //</editor-fold>
 
     Road[] getRoads(boolean in){
         if(in){
