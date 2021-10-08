@@ -19,7 +19,7 @@ public class GridManager {
     List<Road> roads;
 
     GridManager(){
-        setup(Double.MIN_VALUE);
+        setup(0);
     }
 
     GridManager(double chance){
@@ -27,7 +27,7 @@ public class GridManager {
     }
 
     void setup(double chance){
-        if(chance == Double.MIN_VALUE){
+        if(chance == 0){
             quantumGenerator = new QuantumGenerator();
         }
         else{
@@ -66,8 +66,6 @@ public class GridManager {
     }
 
     void simulateSteps(long steps){
-        for(long i = 0; i < steps; i++){
-            updateManager.runStep();
-        }
+        updateManager.runSteps(steps);
     }
 }
