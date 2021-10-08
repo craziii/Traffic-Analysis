@@ -18,7 +18,6 @@ public class UpdateManager {
     Map<UUID, Road> roadMap;
     Map<UUID, Road> entryRoadMap;
     Map<UUID, Intersection> intersectionMap;
-
     Map<UUID, UpdateErrors> updateErrorsMap;
 
     long cycleCounter;

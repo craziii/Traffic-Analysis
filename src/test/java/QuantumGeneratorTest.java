@@ -11,6 +11,7 @@ public class QuantumGeneratorTest{
 
     @Test
     void quantumRNGTest(){
+        float testLimit = 0.01f;
         int testCount = 100000;
         Map<Double,Boolean[]> booleanMap = new HashMap<>();
         for(double c = 0; c <= 1; c+=0.05){
@@ -21,7 +22,7 @@ public class QuantumGeneratorTest{
             results.put(c,countTrue(booleanMap.get(c)));
         }
         for(double c: results.keySet()){
-            assertTrue(results.get(c) >= (testCount * c) - testCount*0.1 && results.get(c) <= (testCount * c) + testCount*0.1);
+            assertTrue(results.get(c) >= (testCount * c) - testCount*testLimit && results.get(c) <= (testCount * c) + testCount*testLimit);
         }
     }
 
