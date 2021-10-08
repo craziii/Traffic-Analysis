@@ -11,7 +11,6 @@
   <component name="ChangeListManager">
     <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="Update Service Rewrite, Step 4-5">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <list id="d0e44681-cbea-41c5-b3b5-fc0bf2c2a964" name="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" comment="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" />
     <option name="SHOW_DIALOG" value="false" />
@@ -282,7 +281,7 @@
       <workItem from="1631309994200" duration="1389000" />
       <workItem from="1631477375118" duration="22000" />
       <workItem from="1632326812090" duration="401000" />
-      <workItem from="1633449343465" duration="35060000" />
+      <workItem from="1633449343465" duration="35508000" />
     </task>
     <task id="LOCAL-00001" summary="Update Service Rewrite, Step 1">
       <created>1633465479291</created>
