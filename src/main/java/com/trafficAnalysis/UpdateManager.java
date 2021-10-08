@@ -1,7 +1,6 @@
 package com.trafficAnalysis;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class UpdateManager {
     Map<UUID, Node> nodeMap;
@@ -22,10 +22,9 @@ public class UpdateManager {
     Map<UUID, UpdateErrors> updateErrorsMap;
 
     long cycleCounter;
-    long cyclesToCount;
 
-    Duration cycleTime;
-    Duration totalTime;
+    long lastUpdateTime;
+    long totalUpdateTime;
 
     QuantumGenerator quantumGenerator;
 
@@ -40,7 +39,6 @@ public class UpdateManager {
         intersectionMoveList = new ArrayList<>();
         updateErrorsMap = new HashMap<>();
         cycleCounter = 0;
-        cyclesToCount = 0;
         quantumGenerator = qg;
     }
 
@@ -68,15 +66,7 @@ public class UpdateManager {
         updateCycle();
     }
 
-    public void runSteps(long cycles){
-        cyclesToCount = cycles;
-        for(long i = 0; i < cyclesToCount; i++){
-            updateCycle();
-        }
-    }
-
     void updateCycle(){
-        Instant cycleStart = Instant.now();
         nodeMoveList.clear();
         intersectionMoveList.clear();
         updateErrorsMap.clear();
@@ -173,9 +163,8 @@ public class UpdateManager {
             printCycleErrors();
         }
         //TODO:STEP 9 - Increment cycle counter
-        Instant cycleEnd = Instant.now();
-        cycleTime = Duration.between(cycleStart,cycleEnd);
-        totalTime = totalTime.plus(cycleTime);
+        lastUpdateTime = System.currentTimeMillis() - timerStart;
+        totalUpdateTime += lastUpdateTime;
         printMetrics();
         cycleCounter++;
     }
@@ -196,13 +185,8 @@ public class UpdateManager {
     }
 
     void printMetrics(){
-        Util.Logging.log("cycle ["+cycleCounter+"] time taken to calculate: ["+ cycleTime.toMinutesPart() + "m"+cycleTime.toSecondsPart()+"."+cycleTime.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
-        Util.Logging.log("Total time to calculate ["+cycleCounter+"] cycles ["+totalTime.toHoursPart() +"h"+ totalTime.toMinutesPart() + "m"+totalTime.toSecondsPart()+"."+totalTime.toMillisPart()+"s], Time per cycle so far ["+totalTime.dividedBy(cycleCounter).toMinutesPart()+"m"+totalTime.dividedBy(cycleCounter).toSecondsPart()+"."+totalTime.dividedBy(cycleCounter).toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
-        if(cyclesToCount > 0){
-            long cyclesLeft = cyclesToCount - cycleCounter;
-            Duration timeLeft = totalTime.dividedBy(cycleCounter).multipliedBy(cyclesLeft);
-            Util.Logging.log("Estimated Time to Completion with ["+cyclesLeft+"] cycles left, ["+timeLeft.toHoursPart()+"h"+timeLeft.toMinutesPart()+"m"+timeLeft.toSecondsPart()+"."+timeLeft.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
-        }
+        Util.Logging.log("cycle ["+cycleCounter+"] time taken to calculate: ["+ TimeUnit.MILLISECONDS.toMinutes(lastUpdateTime) + "m"+(TimeUnit.MILLISECONDS.toSeconds(lastUpdateTime)%60)+"."+(lastUpdateTime%1000)+"s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Total time to calculate ["+cycleCounter+"] cycles ["+ TimeUnit.MILLISECONDS.toMinutes(totalUpdateTime/cycleCounter) + "m"+(TimeUnit.MILLISECONDS.toSeconds(totalUpdateTime/cycleCounter)%60)+"."+((totalUpdateTime/cycleCounter)%1000)+"s]", Util.Logging.LogLevel.INFO);
     }
 
     NodeMove[] getWantedMovement(Road road){

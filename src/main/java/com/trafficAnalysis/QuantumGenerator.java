@@ -13,11 +13,11 @@ public class QuantumGenerator {
     Program programBoolean;
     Program programFloat;
 
-    public QuantumGenerator(){
+    QuantumGenerator(){
         setup(chanceToAngle(DEFAULT_CHANCE));
     }
 
-    public QuantumGenerator(double chance){
+    QuantumGenerator(double chance){
         setup(chanceToAngle(chance));
     }
 

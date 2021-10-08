@@ -1,2 +1,0 @@
-QuantumGeneratorTest.java
- QuantumGeneratorTest
