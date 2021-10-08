@@ -147,6 +147,16 @@ public class Node{
         }
     }
 
+    boolean addCar(){
+        if(nodeStatus != CarStatus.noCar){
+            return false;
+        }
+        else{
+            carEnteringNode();
+        }
+        return true;
+    }
+
     boolean checkGreenLight(){
         return parentRoad.outIntersection.isLightGreen(parentRoad);
     }

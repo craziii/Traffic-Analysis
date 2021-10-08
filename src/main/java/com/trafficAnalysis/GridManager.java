@@ -57,6 +57,10 @@ public class GridManager {
         }
     }
 
+    void onCreationComplete(){
+        updateManager.setEntranceRoads();
+    }
+
     void simulateStep(){
         updateManager.runStep();
     }

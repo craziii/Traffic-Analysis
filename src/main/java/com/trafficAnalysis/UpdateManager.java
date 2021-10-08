@@ -1,17 +1,30 @@
 package com.trafficAnalysis;
 
-import java.util.*;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class UpdateManager {
     Map<UUID, Node> nodeMap;
     Map<UUID, Road> roadMap;
+    Map<UUID, Road> entryRoadMap;
     Map<UUID, Intersection> intersectionMap;
 
+    Map<UUID, UpdateErrors> updateErrorsMap;
+
     long cycleCounter;
+
+    long lastUpdateTime;
+    long totalUpdateTime;
 
     QuantumGenerator quantumGenerator;
 
@@ -19,8 +32,12 @@ public class UpdateManager {
     List<IntersectionMove> intersectionMoveList;
 
     public UpdateManager(QuantumGenerator qg){
+        nodeMap = new HashMap<>();
+        roadMap = new HashMap<>();
+        intersectionMap = new HashMap<>();
         nodeMoveList = new ArrayList<>();
         intersectionMoveList = new ArrayList<>();
+        updateErrorsMap = new HashMap<>();
         cycleCounter = 0;
         quantumGenerator = qg;
     }
@@ -37,6 +54,14 @@ public class UpdateManager {
         intersectionMap.put(uuid, intersection);
     }
 
+    void setEntranceRoads(){
+        for(Road road:roadMap.values()){
+            if(road.inIntersection == null){
+                entryRoadMap.put(road.getUuid(),road);
+            }
+        }
+    }
+
     public void runStep(){
         updateCycle();
     }
@@ -44,6 +69,8 @@ public class UpdateManager {
     void updateCycle(){
         nodeMoveList.clear();
         intersectionMoveList.clear();
+        updateErrorsMap.clear();
+        long timerStart = System.currentTimeMillis();
         //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
@@ -119,10 +146,47 @@ public class UpdateManager {
                 case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
             }
         }
-        //TODO:STEP 6 - Update lights for next step
+        //TODO:STEP 6 - Add New Cars
+        for(Road road:entryRoadMap.values()){
+            if(quantumGenerator.getNextBoolean()){
+                if(!road.getFirstNode().addCar()){
+                    updateErrorsMap.put(road.getUuid(),UpdateErrors.carSpawnError);
+                }
+            }
+        }
+        //TODO:STEP 7 - Update lights for next step
         for(Intersection intersection:intersectionMap.values()){
             intersection.updateGreenLights(false);
         }
+        //TODO:STEP 8 - Check for Errors
+        if(!updateErrorsMap.isEmpty()){
+            printCycleErrors();
+        }
+        //TODO:STEP 9 - Increment cycle counter
+        lastUpdateTime = System.currentTimeMillis() - timerStart;
+        totalUpdateTime += lastUpdateTime;
+        printMetrics();
+        cycleCounter++;
+    }
+
+    void printCycleErrors(){
+        boolean criticalError = false;
+        for(UUID uuid:updateErrorsMap.keySet()){
+            switch(updateErrorsMap.get(uuid)){
+                case carSpawnError: Util.Logging.log("Car failed to spawn on road ["+uuid+"], road was not empty", Util.Logging.LogLevel.ERROR);
+                default: Util.Logging.log("Unknown Error occured at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
+            }
+        }
+        if(criticalError){
+            Util.Logging.log("Critical error on cycle ["+cycleCounter+"]. exiting.",Util.Logging.LogLevel.CRITICAL);
+            System.exit(0);
+        }
+
+    }
+
+    void printMetrics(){
+        Util.Logging.log("cycle ["+cycleCounter+"] time taken to calculate: ["+ TimeUnit.MILLISECONDS.toMinutes(lastUpdateTime) + "m"+(TimeUnit.MILLISECONDS.toSeconds(lastUpdateTime)%60)+"."+(lastUpdateTime%1000)+"s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Total time to calculate ["+cycleCounter+"] cycles ["+ TimeUnit.MILLISECONDS.toMinutes(totalUpdateTime/cycleCounter) + "m"+(TimeUnit.MILLISECONDS.toSeconds(totalUpdateTime/cycleCounter)%60)+"."+((totalUpdateTime/cycleCounter)%1000)+"s]", Util.Logging.LogLevel.INFO);
     }
 
     NodeMove[] getWantedMovement(Road road){
@@ -153,6 +217,10 @@ public class UpdateManager {
         moveI1,
         moveI2,
         noCar
+    }
+
+    enum UpdateErrors{
+        carSpawnError
     }
 
     public NodeMove buildNodeMove(UUID node, NodeMoveEnum move){
