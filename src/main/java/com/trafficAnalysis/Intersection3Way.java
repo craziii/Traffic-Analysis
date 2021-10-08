@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Intersection3Way extends Intersection{
 
-    Intersection3Way(IntersectionBuilder builder) {
-        super(builder);
+    Intersection3Way(IntersectionBuilder builder, QuantumGenerator qg) {
+        super(builder,qg);
     }
 
     @Override
@@ -94,12 +94,58 @@ public class Intersection3Way extends Intersection{
             stepCountdown--;
             return;
         }
-        if(firstTime){
-
+        List<UpdateManager.Direction> lights = new ArrayList<>();
+        if (firstTime) {
+            List<UpdateManager.Direction> outputDirs = new ArrayList<>();
+            for(int i = 0; i < inRoads.length; i++){
+                if(inRoads[i] != null){
+                    outputDirs.add(UpdateManager.Direction.values()[i]);
+                }
+            }
+            outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
+            double temp = Math.random();
+            if(temp < 0.33){
+                lights.add(outputDirections[0]);
+            }
+            else if(temp < 0.66){
+                lights.add(outputDirections[1]);
+            }
+            else{
+                lights.add(outputDirections[2]);
+            }
+        } else {
+            //TODO: ADD CODE FOR DECIDING THE OUTPUT OF 3 WAY INTERSECTIONS
+            int currentOutput = -1;
+            for(int i = 0; i < greenLights.length; i++){
+                if(greenLights[i]){
+                    currentOutput = i;
+                }
+            }
+            switch(currentOutput) {
+                case 0:
+                    if (quantumGenerator.getNextBoolean()) {
+                        lights.add(outputDirections[1]);
+                    } else {
+                        lights.add(outputDirections[2]);
+                    }
+                    break;
+                case 1:
+                    if (quantumGenerator.getNextBoolean()) {
+                        lights.add(outputDirections[0]);
+                    } else {
+                        lights.add(outputDirections[2]);
+                    }
+                    break;
+                case 2:
+                    if (quantumGenerator.getNextBoolean()) {
+                        lights.add(outputDirections[0]);
+                    } else {
+                        lights.add(outputDirections[1]);
+                    }
+                    break;
+            }
         }
-        else{
-
-        }
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
     }
 
 }

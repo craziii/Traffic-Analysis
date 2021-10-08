@@ -5,8 +5,11 @@ import java.util.List;
 
 public class Intersection3WayMinor extends Intersection {
 
-    Intersection3WayMinor(IntersectionBuilder builder) {
-        super(builder);
+    boolean northSouthMajor;
+    UpdateManager.Direction minorRoad;
+
+    Intersection3WayMinor(IntersectionBuilder builder, QuantumGenerator qg) {
+        super(builder, qg);
     }
 
     @Override
@@ -92,11 +95,59 @@ public class Intersection3WayMinor extends Intersection {
             stepCountdown--;
             return;
         }
+        List<UpdateManager.Direction> lights = new ArrayList<>();
         if (firstTime) {
-
+            int northSouthCount = 0;
+            List<UpdateManager.Direction> outputDirs = new ArrayList<>();
+            for(int i = 0; i < inRoads.length; i++){
+                if(inRoads[i] != null){
+                    outputDirs.add(UpdateManager.Direction.values()[i]);
+                    if(i == 0 || i == 2){
+                        northSouthCount++;
+                    }
+                }
+            }
+            outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
+            northSouthMajor = northSouthCount == 2;
+            if(northSouthMajor){
+                for(UpdateManager.Direction dir: outputDirections){
+                    if(dir != UpdateManager.Direction.north && dir != UpdateManager.Direction.south){
+                        minorRoad = dir;
+                    }
+                }
+                if(Math.random() > 0.5){
+                    lights.add(UpdateManager.Direction.north);
+                    lights.add(UpdateManager.Direction.south);
+                }
+                else{
+                    lights.add(minorRoad);
+                }
+            }
+            else{
+                if(Math.random() > 0.5){
+                    lights.add(UpdateManager.Direction.east);
+                    lights.add(UpdateManager.Direction.west);
+                }
+                else{
+                    lights.add(minorRoad);
+                }
+            }
         } else {
-
+            if(greenLights[minorRoad.ordinal()]){
+                if(northSouthMajor){
+                    lights.add(UpdateManager.Direction.north);
+                    lights.add(UpdateManager.Direction.south);
+                }
+                else{
+                    lights.add(UpdateManager.Direction.east);
+                    lights.add(UpdateManager.Direction.west);
+                }
+            }
+            else{
+                lights.add(minorRoad);
+            }
         }
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
     }
 
 }

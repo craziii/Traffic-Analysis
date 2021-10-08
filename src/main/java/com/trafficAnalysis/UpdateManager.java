@@ -165,7 +165,7 @@ public class UpdateManager {
         }
         //TODO:STEP 7 - Update lights for next step
         for(Intersection intersection:intersectionMap.values()){
-            intersection.updateGreenLights(false);
+            intersection.updateGreenLights(false, quantumGenerator);
         }
         //TODO:STEP 8 - Check for Errors
         if(!updateErrorsMap.isEmpty()){

@@ -12,6 +12,8 @@ public class Intersection {
     protected final Road[] inRoads;
     protected final Road[] outRoads;
 
+    protected UpdateManager.Direction[] outputDirections;
+
     protected boolean[] greenLights = {false,false,false,false};
 
     protected int maxCars = 8;
@@ -21,11 +23,14 @@ public class Intersection {
 
     protected final IntersectionType intersectionType;
 
-    Intersection(IntersectionBuilder builder){
+    protected QuantumGenerator quantumGenerator;
+
+    Intersection(IntersectionBuilder builder, QuantumGenerator qg){
         this.uuid = builder.uuidBuilder;
         this.intersectionType = builder.intersectionTypeBuilder;
         this.inRoads = builder.inRoadsBuilder;
         this.outRoads = builder.outRoadsBuilder;
+        quantumGenerator = qg;
         updateGreenLights(true);
     }
 
@@ -97,21 +102,7 @@ public class Intersection {
     }
 
     boolean validIntersectionOutput(UpdateManager.Direction output){
-        switch(output){
-            case north:
-                if (setCarAtNode(outRoads[0])) return true;
-                break;
-            case east:
-                if (setCarAtNode(outRoads[1])) return true;
-                break;
-            case south:
-                if (setCarAtNode(outRoads[2])) return true;
-                break;
-            case west:
-                if (setCarAtNode(outRoads[3])) return true;
-                break;
-        }
-        return false;
+        return setCarAtNode(outRoads[output.ordinal()]);
     }
 
     private boolean setCarAtNode(Road outRoad) {
@@ -153,12 +144,15 @@ public class Intersection {
         private final UUID uuidBuilder;
         private Road[] inRoadsBuilder;
         private Road[] outRoadsBuilder;
+
+        private QuantumGenerator quantumGeneratorBuilder;
         
         private IntersectionType intersectionTypeBuilder;
 
-        public IntersectionBuilder(){
+        public IntersectionBuilder(QuantumGenerator qg){
             uuidBuilder = UUID.randomUUID();
             intersectionTypeBuilder = IntersectionType.none;
+            quantumGeneratorBuilder = qg;
         }
 
         public IntersectionBuilder in(Road inN, Road inE, Road inS, Road inW){
@@ -182,10 +176,10 @@ public class Intersection {
             }
             Intersection intersection;
             switch (intersectionTypeBuilder){
-                case twoWay: intersection = new Intersection2Way(this); break;
-                case threeWay: intersection = new Intersection3Way(this); break;
-                case threeWayMinor: intersection = new Intersection3WayMinor(this); break;
-                case fourWay: intersection = new Intersection4Way(this); break;
+                case twoWay: intersection = new Intersection2Way(this, quantumGeneratorBuilder); break;
+                case threeWay: intersection = new Intersection3Way(this, quantumGeneratorBuilder); break;
+                case threeWayMinor: intersection = new Intersection3WayMinor(this, quantumGeneratorBuilder); break;
+                case fourWay: intersection = new Intersection4Way(this, quantumGeneratorBuilder); break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + intersectionTypeBuilder);
             }

@@ -70,23 +70,6 @@ public class Road{
         setOutIntersection(out);
     }
 
-    //<editor-fold desc="old code">
-
-    /*
-
-    UpdateManager.NodeMove[] simulate(){
-        List<UpdateManager.NodeMove> outputs = new ArrayList<>();
-        for (Node node:nodesInRoad) {
-            node.
-        }
-    }
-
-     */
-
-    //</editor-fold>
-
-    //<editor-fold desc="new code">
-
     UpdateManager.NodeMove[] getWantedMovement(){
         List<UpdateManager.NodeMove> outputs = new ArrayList<>();
         for (Node node:nodesInRoad) {
@@ -94,8 +77,6 @@ public class Road{
         }
         return outputs.toArray(new UpdateManager.NodeMove[0]);
     }
-
-    //</editor-fold>
 
     public UUID getUuid() {
         return uuid;

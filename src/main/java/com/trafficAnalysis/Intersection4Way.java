@@ -1,9 +1,12 @@
 package com.trafficAnalysis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Intersection4Way extends Intersection{
 
-    Intersection4Way(IntersectionBuilder builder) {
-        super(builder);
+    Intersection4Way(IntersectionBuilder builder, QuantumGenerator qg) {
+        super(builder,qg);
     }
 
     @Override
@@ -85,12 +88,26 @@ public class Intersection4Way extends Intersection{
             stepCountdown--;
             return;
         }
-        if(firstTime){
-
+        List<UpdateManager.Direction> lights = new ArrayList<>();
+        if (firstTime) {
+            if(quantumGenerator.getNextBoolean()){
+                lights.add(UpdateManager.Direction.north);
+                lights.add(UpdateManager.Direction.south);
+            }
+            else{
+                lights.add(UpdateManager.Direction.east);
+                lights.add(UpdateManager.Direction.west);
+            }
+        } else {
+            if (greenLights[UpdateManager.Direction.north.ordinal()]) {
+                lights.add(UpdateManager.Direction.east);
+                lights.add(UpdateManager.Direction.west);
+            } else {
+                lights.add(UpdateManager.Direction.north);
+                lights.add(UpdateManager.Direction.south);
+            }
         }
-        else{
-
-        }
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
     }
 
 }
