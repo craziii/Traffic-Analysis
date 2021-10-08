@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="QuantumGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-10-08T18:29:56" hostname="CRAZI-PC" time="3.604">
+  <properties/>
+  <testcase name="quantumRNGTest()" classname="QuantumGeneratorTest" time="3.604"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,15 +1,10 @@
 package com.trafficAnalysis;
 
-import javax.lang.model.type.IntersectionType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public class Intersection {
     private final UUID uuid;
