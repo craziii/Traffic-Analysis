@@ -15,7 +15,7 @@ public class Intersection {
     protected boolean[] greenLights = {false,false,false,false};
 
     protected int maxCars = 8;
-    protected Queue<CarInput> carsInIntersection = new ArrayDeque<>();
+    protected Queue<UpdateManager.Direction> carsInIntersection = new ArrayDeque<>();
 
     protected int stepCountdown = 0;
 
@@ -56,22 +56,22 @@ public class Intersection {
         }
         switch(dir) {
             case 0:
-                carsInIntersection.add(CarInput.north);
+                carsInIntersection.add(UpdateManager.Direction.north);
                 break;
             case 1:
-                carsInIntersection.add(CarInput.east);
+                carsInIntersection.add(UpdateManager.Direction.east);
                 break;
             case 2:
-                carsInIntersection.add(CarInput.south);
+                carsInIntersection.add(UpdateManager.Direction.south);
                 break;
             case 3:
-                carsInIntersection.add(CarInput.west);
+                carsInIntersection.add(UpdateManager.Direction.west);
                 break;
         }
     }
 
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator){
-        return new UpdateManager.IntersectionMove(this, UpdateManager.IntersectionMoveEnum.none, UpdateManager.IntersectionMoveEnum.none);
+        return new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
     }
 
     void updateGreenLights(boolean firstTime){
@@ -86,8 +86,17 @@ public class Intersection {
 
         }
     }
+    
+    void setGreenLights(UpdateManager.Direction[] direction){
+        for(boolean b:greenLights){
+            b = false;
+        }
+        for(UpdateManager.Direction dir:direction){
+            greenLights[dir.ordinal()] = true;
+        }
+    }
 
-    boolean validIntersectionOutput(UpdateManager.IntersectionMoveEnum output){
+    boolean validIntersectionOutput(UpdateManager.Direction output){
         switch(output){
             case north:
                 if (setCarAtNode(outRoads[0])) return true;
@@ -130,13 +139,6 @@ public class Intersection {
 
     public IntersectionType getIntersectionType() {
         return intersectionType;
-    }
-
-    public enum CarInput{
-        north,
-        east,
-        south,
-        west
     }
 
     public enum IntersectionType{

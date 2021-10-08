@@ -11,42 +11,42 @@ public class Intersection3Way extends Intersection{
 
     @Override
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator) {
-        CarInput tempInput = carsInIntersection.remove();
-        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.IntersectionMoveEnum.none, UpdateManager.IntersectionMoveEnum.none);
+        UpdateManager.Direction tempInput = carsInIntersection.remove();
+        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
         switch (tempInput) {
             case north:
-                temp.in = UpdateManager.IntersectionMoveEnum.north;
+                temp.in = UpdateManager.Direction.north;
                 break;
             case east:
-                temp.in = UpdateManager.IntersectionMoveEnum.east;
+                temp.in = UpdateManager.Direction.east;
                 break;
             case south:
-                temp.in = UpdateManager.IntersectionMoveEnum.south;
+                temp.in = UpdateManager.Direction.south;
                 break;
             case west:
-                temp.in = UpdateManager.IntersectionMoveEnum.west;
+                temp.in = UpdateManager.Direction.west;
                 break;
         }
-        List<UpdateManager.IntersectionMoveEnum> options = new ArrayList<>();
+        List<UpdateManager.Direction> options = new ArrayList<>();
         for(int i = 0; i < inRoads.length; i++){
             if(inRoads[i] != null){
                 switch (i) {
                     case 0:
-                        options.add(UpdateManager.IntersectionMoveEnum.north);
+                        options.add(UpdateManager.Direction.north);
                         break;
                     case 1:
-                        options.add(UpdateManager.IntersectionMoveEnum.east);
+                        options.add(UpdateManager.Direction.east);
                         break;
                     case 2:
-                        options.add(UpdateManager.IntersectionMoveEnum.south);
+                        options.add(UpdateManager.Direction.south);
                         break;
                     case 3:
-                        options.add(UpdateManager.IntersectionMoveEnum.west);
+                        options.add(UpdateManager.Direction.west);
                         break;
                 }
             }
         }
-        UpdateManager.IntersectionMoveEnum[] directions = options.toArray(new UpdateManager.IntersectionMoveEnum[0]);
+        UpdateManager.Direction[] directions = options.toArray(new UpdateManager.Direction[0]);
         int offset = -3;
         for(int i = 0; i < directions.length; i++){
             if(temp.in == directions[i]){
