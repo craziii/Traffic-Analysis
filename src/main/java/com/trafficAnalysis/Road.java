@@ -1,5 +1,6 @@
 package com.trafficAnalysis;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +49,8 @@ public class Road{
         }
         setFirstNode(nodesInRoad.get(0));
         setLastNode(nodesInRoad.get(nodesInRoad.size()-1));
+        firstNode.setNodeBefore(null);
+        lastNode.setNodeAfter(null);
     }
 
     void getTotalPressure(){
@@ -67,8 +70,12 @@ public class Road{
         setOutIntersection(out);
     }
 
-    void simulate(){
-
+    UpdateManager.NodeMove[] getWantedMovement(){
+        List<UpdateManager.NodeMove> outputs = new ArrayList<>();
+        for (Node node:nodesInRoad) {
+            outputs.add(node.getNextMove());
+        }
+        return outputs.toArray(new UpdateManager.NodeMove[0]);
     }
 
     public UUID getUuid() {

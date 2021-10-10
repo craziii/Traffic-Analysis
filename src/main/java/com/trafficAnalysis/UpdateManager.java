@@ -1,6 +1,13 @@
 package com.trafficAnalysis;
 
-import java.util.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,84 +16,196 @@ import java.util.concurrent.Future;
 public class UpdateManager {
     Map<UUID, Node> nodeMap;
     Map<UUID, Road> roadMap;
+    Map<UUID, Road> entryRoadMap;
     Map<UUID, Intersection> intersectionMap;
+    Map<UUID, UpdateErrors> updateErrorsMap;
 
     long cycleCounter;
+    long cyclesToCount;
+
+    Duration cycleTime;
+    Duration totalTime;
+
+    QuantumGenerator quantumGenerator;
 
     List<NodeMove> nodeMoveList;
     List<IntersectionMove> intersectionMoveList;
 
-    public UpdateManager(){
+    public UpdateManager(QuantumGenerator qg){
+        nodeMap = new HashMap<>();
+        roadMap = new HashMap<>();
+        intersectionMap = new HashMap<>();
         nodeMoveList = new ArrayList<>();
         intersectionMoveList = new ArrayList<>();
+        updateErrorsMap = new HashMap<>();
         cycleCounter = 0;
+        cyclesToCount = 0;
+        quantumGenerator = qg;
     }
 
-    void addNodeToDictionary(UUID uuid, Node node){
+    void addNodeToMap(UUID uuid, Node node){
         nodeMap.put(uuid,node);
     }
 
-    void addRoadToDictionary(UUID uuid, Road road){
+    void addRoadToMap(UUID uuid, Road road){
         roadMap.put(uuid,road);
     }
 
-    void addIntersectionToDictionary(UUID uuid, Intersection intersection){
+    void addIntersectionToMap(UUID uuid, Intersection intersection){
         intersectionMap.put(uuid, intersection);
     }
 
+    void setEntranceRoads(){
+        for(Road road:roadMap.values()){
+            if(road.inIntersection == null){
+                entryRoadMap.put(road.getUuid(),road);
+            }
+        }
+    }
+
+    public void runStep(){
+        updateCycle();
+    }
+
+    public void runSteps(long cycles){
+        cyclesToCount = cycles;
+        for(long i = 0; i < cyclesToCount; i++){
+            updateCycle();
+        }
+    }
+
     void updateCycle(){
-        cycleError error = cycleError.noError;
+        Instant cycleStart = Instant.now();
         nodeMoveList.clear();
         intersectionMoveList.clear();
+        updateErrorsMap.clear();
+        long timerStart = System.currentTimeMillis();
+        //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
-        List<Future<IntersectionMove[]>> intersectionTasks = new ArrayList<>();
         for (Map.Entry<UUID, Road> pair:roadMap.entrySet()) {
-            Future<NodeMove[]> futureNodeTask = threadPool.submit(() -> getRoads(pair.getValue()));
+            Future<NodeMove[]> futureNodeTask = threadPool.submit(() -> getWantedMovement(pair.getValue()));
             nodeTasks.add(futureNodeTask);
         }
-        for (Map.Entry<UUID, Intersection> pair:intersectionMap.entrySet()) {
-            Future<IntersectionMove[]> futureIntersectionTask = threadPool.submit(() -> getIntersections(pair.getValue()));
-            intersectionTasks.add(futureIntersectionTask);
-        }
         boolean nodeTaskBoolean = false;
-        boolean intersectionTaskBoolean = false;
-        while(!nodeTaskBoolean && !intersectionTaskBoolean){
-            if(!nodeTaskBoolean){
-                nodeTaskBoolean = checkNodeTasks(nodeTasks);
-            }
-            if(!intersectionTaskBoolean){
-                intersectionTaskBoolean = checkIntersectionTasks(intersectionTasks);
-            }
+        while(!nodeTaskBoolean) {
+            nodeTaskBoolean = checkNodeTasks(nodeTasks);
         }
         for (Future<NodeMove[]> task: nodeTasks) {
             try {
                 nodeMoveList.addAll(Arrays.asList(task.get()));
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
-                error = cycleError.nodeFutureError;
             }
         }
-        for (Future<IntersectionMove[]> task: intersectionTasks) {
-            try {
-                intersectionMoveList.addAll(Arrays.asList(task.get()));
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                error = cycleError.intersectionFutureError;
+        //TODO:STEP 2 - Move this info to Intersections to decide if some moves cannot be made
+        List<NodeMove> intersectionTest = new ArrayList<>();
+        for (NodeMove nm:nodeMoveList) {
+            if(nm.move == NodeMoveEnum.moveI1){
+                intersectionTest.add(nm);
             }
         }
-        if(error != cycleError.noError){
-            System.out.println("Cycle error at cycle: " + cycleCounter + ". Error caused by: " + error.name());
+        for (NodeMove nm:nodeMoveList) {
+            if(nm.move == NodeMoveEnum.moveI2){
+                intersectionTest.add(nm);
+            }
         }
-        else{
-            runCycle();
+        for (NodeMove nm:intersectionTest) {
+            if(nm.node.parentRoad.outIntersection.hasSpaceForCars()){
+                nodeMoveList.remove(nm);
+                nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+            }
+            else{
+                NodeMove temp = nm;
+                if(nm.move == NodeMoveEnum.moveI2){
+                    temp.move = NodeMoveEnum.move1;
+                }
+                else{
+                    temp.move = NodeMoveEnum.noMove;
+                }
+                nodeMoveList.set(nodeMoveList.indexOf(nm),temp);
+            }
+        }
+        //TODO:STEP 3 - Simulate Movement through intersections
+        for (Intersection intersection:intersectionMap.values()) {
+            int count = 0;
+            switch (intersection.getIntersectionType()){
+                case twoWay: count = 2; break;
+                case threeWay: count = 3; break;
+                case fourWay: count = 4; break;
+            }
+            for(int i = 0; i < count; i++){
+                if(!intersection.isEmpty()){
+                    IntersectionMove tempIntersectionMove = intersection.getNextIntersectionOutput(quantumGenerator);
+                    if(tempIntersectionMove != null){
+                        intersectionMoveList.add(tempIntersectionMove);
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        //TODO:STEP 4 - Pass movement information back to nodes
+        //Done inside simulations
+        //TODO:STEP 5 - Move cars in nodes
+        for (NodeMove nm:nodeMoveList) {
+            switch(nm.move){
+                case move1: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly); break;
+                case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
+            }
+        }
+        //TODO:STEP 6 - Add New Cars
+        for(Road road:entryRoadMap.values()){
+            if(quantumGenerator.getNextBoolean()){
+                if(!road.getFirstNode().addCar()){
+                    updateErrorsMap.put(road.getUuid(),UpdateErrors.carSpawnError);
+                }
+            }
+        }
+        //TODO:STEP 7 - Update lights for next step
+        for(Intersection intersection:intersectionMap.values()){
+            intersection.updateGreenLights(false);
+        }
+        //TODO:STEP 8 - Check for Errors
+        if(!updateErrorsMap.isEmpty()){
+            printCycleErrors();
+        }
+        //TODO:STEP 9 - Increment cycle counter
+        Instant cycleEnd = Instant.now();
+        cycleTime = Duration.between(cycleStart,cycleEnd);
+        totalTime = totalTime.plus(cycleTime);
+        printMetrics();
+        cycleCounter++;
+    }
+
+    void printCycleErrors(){
+        boolean criticalError = false;
+        for(UUID uuid:updateErrorsMap.keySet()){
+            switch(updateErrorsMap.get(uuid)){
+                case carSpawnError: Util.Logging.log("Car failed to spawn on road ["+uuid+"], road was not empty", Util.Logging.LogLevel.ERROR);
+                default: Util.Logging.log("Unknown Error occured at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
+            }
+        }
+        if(criticalError){
+            Util.Logging.log("Critical error on cycle ["+cycleCounter+"]. exiting.",Util.Logging.LogLevel.CRITICAL);
+            System.exit(0);
+        }
+
+    }
+
+    void printMetrics(){
+        Util.Logging.log("cycle ["+cycleCounter+"] time taken to calculate: ["+ cycleTime.toMinutesPart() + "m"+cycleTime.toSecondsPart()+"."+cycleTime.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Total time to calculate ["+cycleCounter+"] cycles ["+totalTime.toHoursPart() +"h"+ totalTime.toMinutesPart() + "m"+totalTime.toSecondsPart()+"."+totalTime.toMillisPart()+"s], Time per cycle so far ["+totalTime.dividedBy(cycleCounter).toMinutesPart()+"m"+totalTime.dividedBy(cycleCounter).toSecondsPart()+"."+totalTime.dividedBy(cycleCounter).toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
+        if(cyclesToCount > 0){
+            long cyclesLeft = cyclesToCount - cycleCounter;
+            Duration timeLeft = totalTime.dividedBy(cycleCounter).multipliedBy(cyclesLeft);
+            Util.Logging.log("Estimated Time to Completion with ["+cyclesLeft+"] cycles left, ["+timeLeft.toHoursPart()+"h"+timeLeft.toMinutesPart()+"m"+timeLeft.toSecondsPart()+"."+timeLeft.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
         }
     }
 
-    enum cycleError{
-        noError,
-        nodeFutureError,
-        intersectionFutureError
+    NodeMove[] getWantedMovement(Road road){
+        return road.getWantedMovement();
     }
 
     boolean checkNodeTasks(List<Future<NodeMove[]>> tasks){
@@ -98,48 +217,25 @@ public class UpdateManager {
         return true;
     }
 
-    boolean checkIntersectionTasks(List<Future<IntersectionMove[]>> tasks){
-        for (Future<IntersectionMove[]> task: tasks) {
-            if(!task.isDone()){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void runCycle(){
-
-        cycleCounter++;
-    }
-
-    NodeMove[] getRoads(Road road){
-        return new NodeMove[1];
-    }
-
-    IntersectionMove[] getIntersections(Intersection intersection){
-        return intersection.simulate();
-    }
-
-    enum IntersectionMoveEnum {
-        none,
-        northToEast,
-        northToSouth,
-        northToWest,
-        eastToSouth,
-        eastToWest,
-        eastToNorth,
-        southToWest,
-        southToNorth,
-        southToEast,
-        westToNorth,
-        westToEast,
-        westToSouth
+    enum Direction {
+        north,
+        east,
+        south,
+        west,
+        none
     }
 
     enum NodeMoveEnum {
         noMove,
         move1,
-        move2
+        move2,
+        moveI1,
+        moveI2,
+        noCar
+    }
+
+    enum UpdateErrors{
+        carSpawnError
     }
 
     public NodeMove buildNodeMove(UUID node, NodeMoveEnum move){
@@ -150,11 +246,11 @@ public class UpdateManager {
         nodeMoveList.add(nodeMove);
     }
 
-    public IntersectionMove buildIntersectionMove(UUID intersection, IntersectionMoveEnum move){
-        return new IntersectionMove(intersectionMap.get(intersection), move);
+    public IntersectionMove buildIntersectionMove(UUID intersection, Direction in, Direction out){
+        return new IntersectionMove(intersectionMap.get(intersection), in, out);
     }
 
-    void buildIntersectionMove(IntersectionMove intersectionMove){
+    void addIntersectionMove(IntersectionMove intersectionMove){
         intersectionMoveList.add(intersectionMove);
     }
 
@@ -170,11 +266,13 @@ public class UpdateManager {
 
     public static class IntersectionMove{
         Intersection intersection;
-        IntersectionMoveEnum move;
+        Direction in;
+        Direction out;
 
-        IntersectionMove(Intersection i, IntersectionMoveEnum m){
+        IntersectionMove(Intersection i, Direction _in, Direction _out){
             intersection = i;
-            move = m;
+            in = _in;
+            out = _out;
         }
     }
 }

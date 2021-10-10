@@ -1,225 +1,167 @@
 package com.trafficAnalysis;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Queue;
 import java.util.UUID;
 
 public class Intersection {
-    private final UUID uuid;
-    private final Road inNorth;
-    private final Road inEast;
-    private final Road inSouth;
-    private final Road inWest;
-    private final Road outNorth;
-    private final Road outEast;
-    private final Road outSouth;
-    private final Road outWest;
+    protected final UUID uuid;
 
-    private final Road[] inRoads;
-    private final Road[] outRoads;
-    
-    private boolean[] greenLights = {false,false,false,false};
+    protected final Road[] inRoads;
+    protected final Road[] outRoads;
 
-    private int stepCountdown = 0;
-    
-    private final IntersectionType intersectionType;
+    protected UpdateManager.Direction[] outputDirections;
 
-    Intersection(IntersectionBuilder builder){
+    protected boolean[] greenLights = {false,false,false,false};
+
+    protected int maxCars = 8;
+    protected Queue<UpdateManager.Direction> carsInIntersection = new ArrayDeque<>();
+
+    protected int stepCountdown = 0;
+
+    protected final IntersectionType intersectionType;
+
+    protected QuantumGenerator quantumGenerator;
+
+    Intersection(IntersectionBuilder builder, QuantumGenerator qg){
         this.uuid = builder.uuidBuilder;
-        this.inNorth = builder.inNorthBuilder;
-        this.inEast = builder.inEastBuilder;
-        this.inSouth = builder.inSouthBuilder;
-        this.inWest = builder.inWestBuilder;
-        this.outNorth = builder.outNorthBuilder;
-        this.outEast = builder.outEastBuilder;
-        this.outSouth = builder.outSouthBuilder;
-        this.outWest = builder.outWestBuilder;
         this.intersectionType = builder.intersectionTypeBuilder;
-        this.inRoads = getRoads(true);
-        this.outRoads = getRoads(false);
-        updateGreenLights();
+        this.inRoads = builder.inRoadsBuilder;
+        this.outRoads = builder.outRoadsBuilder;
+        quantumGenerator = qg;
+        updateGreenLights(true);
     }
 
-    UpdateManager.IntersectionMove[] simulate(QuantumGenerator quantumGenerator, int[] cars){
-        List<UpdateManager.IntersectionMove> outputs = new ArrayList<>();
-        for(int i = 0; i < cars.length; i++){
-            for(int j = 0; j < cars[i]; j++){
-                UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.IntersectionMoveEnum.northToEast);
-                if(quantumGenerator.getNextBoolean()){ // First, go straight
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToSouth; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToWest; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToNorth; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToEast; break;
-                    }
-                }
-                else if(quantumGenerator.getNextBoolean()){ // Second, left turn
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToEast; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToSouth; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToWest; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToNorth; break;
-                    }
-                }
-                else{ // Finally, right turn
-                    switch (i){
-                        case 0: temp.move = UpdateManager.IntersectionMoveEnum.northToWest; break;
-                        case 1: temp.move = UpdateManager.IntersectionMoveEnum.eastToNorth; break;
-                        case 2: temp.move = UpdateManager.IntersectionMoveEnum.southToEast; break;
-                        case 3: temp.move = UpdateManager.IntersectionMoveEnum.westToSouth; break;
-                    }
-                }
-                outputs.add(temp);
+    public boolean isLightGreen(Road parentRoad) {
+        for(int i = 0; i < inRoads.length; i++){
+            if(inRoads[i] == parentRoad){
+                return greenLights[i];
             }
         }
-        return outputs.toArray(new UpdateManager.IntersectionMove[0]);
+        System.console().writer().println("ERROR: Road accessed incorrect intersection, road: "+parentRoad.getUuid()+ " is not connected to intersection: " + getUuid());
+        return false;
     }
 
-    UpdateManager.IntersectionMove[] greenLight(){
-        
+    public boolean hasSpaceForCars(){
+        return carsInIntersection.size() < maxCars;
     }
 
-    UpdateManager.IntersectionMove createMove(Node node, char inDirection){
-        UpdateManager.IntersectionMoveEnum intersectionMoveEnum = UpdateManager.IntersectionMoveEnum.none;
-        switch(intersectionType){
-            case fourWay:  break;
-            case threeWay:  break;
-            case twoWay:  break;
-            default:  break;
+    public boolean isEmpty(){
+        return carsInIntersection.size() == 0;
+    }
+
+    public void addCar(Road inputDirection){
+        int dir = -1;
+        for(int i = 0; i < inRoads.length; i++){
+            if(inRoads[i] == inputDirection){
+                dir = i;
+            }
         }
-        switch (inDirection){
-            case 'n': break;
-            case 'e': break;
-            case 's': break;
-            case 'w': break;
+        switch(dir) {
+            case 0:
+                carsInIntersection.add(UpdateManager.Direction.north);
+                break;
+            case 1:
+                carsInIntersection.add(UpdateManager.Direction.east);
+                break;
+            case 2:
+                carsInIntersection.add(UpdateManager.Direction.south);
+                break;
+            case 3:
+                carsInIntersection.add(UpdateManager.Direction.west);
+                break;
         }
-        return new UpdateManager.IntersectionMove(this, intersectionMoveEnum);
     }
 
-    void updateGreenLights(){
-        switch (intersectionType){
-            case fourWay: break;
-            case threeWay: break;
-            case twoWay: break;
-        }
-
+    UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator){
+        return new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
     }
 
-    Road[] getRoads(boolean inRoads){
-        Road[] temp = new Road[4];
-        if(inRoads){
-            temp[0] = getInNorth();
-            temp[1] = getInEast();
-            temp[2] = getInSouth();
-            temp[3] = getInWest();
+    void updateGreenLights(boolean firstTime){
+        if(stepCountdown > 0){
+            stepCountdown--;
+            return;
+        }
+        if(firstTime){
+
         }
         else{
-            temp[0] = getOutNorth();
-            temp[1] = getOutEast();
-            temp[2] = getOutSouth();
-            temp[3] = getOutWest();
+
         }
-        return (Road[])Arrays.stream(temp).filter(Objects::nonNull).toArray();
+    }
+    
+    void setGreenLights(UpdateManager.Direction[] direction){
+        for(boolean b:greenLights){
+            b = false;
+        }
+        for(UpdateManager.Direction dir:direction){
+            greenLights[dir.ordinal()] = true;
+        }
+    }
+
+    boolean validIntersectionOutput(UpdateManager.Direction output){
+        return setCarAtNode(outRoads[output.ordinal()]);
+    }
+
+    private boolean setCarAtNode(Road outRoad) {
+        if(outRoad.firstNode.nodeStatus == Node.CarStatus.noCar && outRoad.firstNode.getNodeAfter().nodeStatus == Node.CarStatus.noCar){
+            outRoad.firstNode.getNodeAfter().setStatus(Node.CarStatus.waiting);
+            return true;
+        }
+        else if(outRoad.firstNode.nodeStatus == Node.CarStatus.noCar){
+            outRoad.firstNode.setStatus(Node.CarStatus.waiting);
+            return true;
+        }
+        return false;
+    }
+
+    Road[] getRoads(boolean in){
+        if(in){
+            return inRoads;
+        }
+        else{
+            return outRoads;
+        }
     }
 
     public UUID getUuid(){ return uuid; }
 
-    public Road getInNorth() {
-        return inNorth;
+    public IntersectionType getIntersectionType() {
+        return intersectionType;
     }
 
-    public Road getInEast() {
-        return inEast;
-    }
-
-    public Road getInSouth() {
-        return inSouth;
-    }
-
-    public Road getInWest() {
-        return inWest;
-    }
-
-    public Road getOutNorth() {
-        return outNorth;
-    }
-
-    public Road getOutEast() {
-        return outEast;
-    }
-
-    public Road getOutSouth() {
-        return outSouth;
-    }
-
-    public Road getOutWest() {
-        return outWest;
-    }
-    
     public enum IntersectionType{
         none,
         fourWay,
         threeWay,
+        threeWayMinor,
         twoWay
     }
 
     public static class IntersectionBuilder{
         private final UUID uuidBuilder;
-        private Road inNorthBuilder;
-        private Road inEastBuilder;
-        private Road inSouthBuilder;
-        private Road inWestBuilder;
-        private Road outNorthBuilder;
-        private Road outEastBuilder;
-        private Road outSouthBuilder;
-        private Road outWestBuilder;
+        private Road[] inRoadsBuilder;
+        private Road[] outRoadsBuilder;
+
+        private QuantumGenerator quantumGeneratorBuilder;
         
         private IntersectionType intersectionTypeBuilder;
 
-        public IntersectionBuilder(){
+        public IntersectionBuilder(QuantumGenerator qg){
             uuidBuilder = UUID.randomUUID();
             intersectionTypeBuilder = IntersectionType.none;
+            quantumGeneratorBuilder = qg;
         }
 
-        public IntersectionBuilder inN(Road inN){
-            this.inNorthBuilder = inN;
+        public IntersectionBuilder in(Road inN, Road inE, Road inS, Road inW){
+            this.inRoadsBuilder = new Road[]{inN, inE, inS, inW};
             return this;
         }
 
-        public IntersectionBuilder inE(Road inE){
-            this.inEastBuilder = inE;
-            return this;
-        }
-
-        public IntersectionBuilder inS(Road inS){
-            this.inSouthBuilder = inS;
-            return this;
-        }
-
-        public IntersectionBuilder inW(Road inW){
-            this.inWestBuilder = inW;
-            return this;
-        }
-
-        public IntersectionBuilder outN(Road outN){
-            this.outNorthBuilder = outN;
-            return this;
-        }
-
-        public IntersectionBuilder outE(Road outE){
-            this.outEastBuilder = outE;
-            return this;
-        }
-
-        public IntersectionBuilder outS(Road outS){
-            this.outSouthBuilder = outS;
-            return this;
-        }
-
-        public IntersectionBuilder outW(Road outW){
-            this.outWestBuilder = outW;
+        public IntersectionBuilder out(Road outN, Road outE, Road outS, Road outW){
+            this.outRoadsBuilder = new Road[]{outN, outE, outS, outW};
             return this;
         }
 
@@ -232,50 +174,45 @@ public class Intersection {
             if(intersectionTypeBuilder == IntersectionType.none){
                 generateType();
             }
-            Intersection intersection = new Intersection(this);
-            validateIntersection(intersection);
+            Intersection intersection;
+            switch (intersectionTypeBuilder){
+                case twoWay: intersection = new Intersection2Way(this, quantumGeneratorBuilder); break;
+                case threeWay: intersection = new Intersection3Way(this, quantumGeneratorBuilder); break;
+                case threeWayMinor: intersection = new Intersection3WayMinor(this, quantumGeneratorBuilder); break;
+                case fourWay: intersection = new Intersection4Way(this, quantumGeneratorBuilder); break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + intersectionTypeBuilder);
+            }
             return intersection;
         }
 
-        private void generateType(){
+        private void generateType() {
             int nulls = 0;
-            nulls = getNulls(nulls, inNorthBuilder, inEastBuilder, inSouthBuilder, inWestBuilder);
-            nulls = getNulls(nulls, outNorthBuilder, outEastBuilder, outSouthBuilder, outWestBuilder);
-            switch (nulls){
-                case 4: intersectionType(IntersectionType.twoWay); break;
-                case 2: intersectionType(IntersectionType.threeWay); break;
-                case 0: intersectionType(IntersectionType.fourWay); break;
-                default: break;
+            nulls = getNulls(nulls, inRoadsBuilder);
+            nulls = getNulls(nulls, outRoadsBuilder);
+            switch (nulls) {
+                case 4:
+                    intersectionType(IntersectionType.twoWay);
+                    break;
+                case 2:
+                    intersectionType(IntersectionType.threeWay);
+                    break;
+                case 0:
+                    intersectionType(IntersectionType.fourWay);
+                    break;
+                default:
+                    break;
             }
         }
 
-        private int getNulls(int nulls, Road n, Road e, Road s, Road w) {
-            if(n == null){
-                nulls++;
+        private int getNulls(int nulls, Road[] roads) {
+            int temp = nulls;
+            for (Road road : roads) {
+                if (road == null) {
+                    temp++;
+                }
             }
-            if(e == null){
-                nulls++;
-            }
-            if(s == null){
-                nulls++;
-            }
-            if(w == null){
-                nulls++;
-            }
-            return nulls;
-        }
-
-        private void validateIntersection(Intersection intersection){
-            StringBuilder stringBuilder = new StringBuilder();
-
-
-            if(stringBuilder.toString().equals("")){
-                System.out.println("Intersection validated correctly");
-            }
-            else{
-                System.out.println(stringBuilder);
-            }
-
+            return temp;
         }
     }
 

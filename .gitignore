@@ -1,0 +1,6 @@
+/Traffic-Analysis.main.jar
+/build/tmp/
+/build/*
+/tmp/*
+/generated/*
+/.idea/workspace.xml
