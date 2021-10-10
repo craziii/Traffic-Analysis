@@ -13,6 +13,7 @@ public class GridManager {
     public static final float NO_CAR_PRESSURE_RATE = -3f;
     public static final float LOWEST_PRESSURE = 0.01f;
 
+    GridBuilder gridBuilder;
     QuantumGenerator quantumGenerator;
     UpdateManager updateManager;
     List<Intersection> intersections;
@@ -36,15 +37,23 @@ public class GridManager {
         updateManager = new UpdateManager(quantumGenerator);
         intersections = new ArrayList<>();
         roads = new ArrayList<>();
+        gridBuilder = new GridBuilder(this);
     }
 
-    void createIntersection(Road[] roadsArr){
+    void createWorld(){
+        gridBuilder.fileToIntersectionMapping();
+        gridBuilder.intersectionMappingToWorldMap();
+        updateManager.
+        onCreationComplete();
+    }
+
+    public void createIntersection(Road[] roadsArr){
         Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).build();
         intersections.add(intersection);
         updateManager.addIntersectionToMap(intersection.getUuid(),intersection);
     }
 
-    void createRoad(int numNodes){
+    public void createRoad(int numNodes){
         Road road = new Road(numNodes);
         roads.add(road);
         updateManager.addRoadToMap(road.getUuid(), road);
@@ -57,7 +66,7 @@ public class GridManager {
         }
     }
 
-    void onCreationComplete(){
+    public void onCreationComplete(){
         updateManager.setEntranceRoads();
     }
 

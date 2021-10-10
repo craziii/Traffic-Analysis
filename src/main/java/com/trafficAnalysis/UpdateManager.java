@@ -79,7 +79,6 @@ public class UpdateManager {
         nodeMoveList.clear();
         intersectionMoveList.clear();
         updateErrorsMap.clear();
-        long timerStart = System.currentTimeMillis();
         //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
@@ -184,7 +183,7 @@ public class UpdateManager {
         for(UUID uuid:updateErrorsMap.keySet()){
             switch(updateErrorsMap.get(uuid)){
                 case carSpawnError: Util.Logging.log("Car failed to spawn on road ["+uuid+"], road was not empty", Util.Logging.LogLevel.ERROR);
-                default: Util.Logging.log("Unknown Error occured at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
+                default: Util.Logging.log("Unknown Error occurred at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
             }
         }
         if(criticalError){

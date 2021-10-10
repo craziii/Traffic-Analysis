@@ -180,6 +180,24 @@ public class Util {
                 return null;
             }
         }
+
+        public static String[] readFile(File file){
+            List<String> lines = new ArrayList<>();
+            try{
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                while(bufferedReader.ready()){
+                    lines.add(bufferedReader.readLine());
+                }
+                bufferedReader.close();
+                fileReader.close();
+                return lines.toArray(new String[0]);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 
 
