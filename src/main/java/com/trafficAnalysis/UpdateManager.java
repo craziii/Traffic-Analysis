@@ -217,7 +217,7 @@ public class UpdateManager {
         return true;
     }
 
-    enum Direction {
+    public enum Direction {
         north,
         east,
         south,
