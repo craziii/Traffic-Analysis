@@ -19,15 +19,7 @@ public class Road{
     float totalPressure;
 
     public Road(int nodes){
-        setup(nodes);
-    }
-
-    public Road(int nodes, Intersection in, Intersection out){
-        setup(nodes);
-        attachToIntersection(in, out);
-    }
-
-    void setup(int nodes){
+        nodesInRoad = new ArrayList<>();
         for(int i = 0; i < nodes; i++){
             Node node = new Node();
             addNodeToRoad(node);
@@ -35,6 +27,17 @@ public class Road{
         organiseNodes();
         uuid = UUID.randomUUID();
         totalPressure = 0;
+    }
+
+    public Road(int nodes, Intersection in, Intersection out){
+        for(int i = 0; i < nodes; i++){
+            Node node = new Node();
+            addNodeToRoad(node);
+        }
+        organiseNodes();
+        uuid = UUID.randomUUID();
+        totalPressure = 0;
+        attachToIntersection(in, out);
     }
 
     void organiseNodes(){
@@ -83,7 +86,7 @@ public class Road{
     }
 
     public Node[] getNodes(){
-        return (Node[]) nodesInRoad.toArray();
+        return nodesInRoad.toArray(new Node[0]);
     }
 
     public Node getFirstNode() {

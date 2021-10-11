@@ -21,18 +21,23 @@ public class GridManager {
     UpdateManager updateManager;
 
     GridManager(){
-        setup(0,GridBuilder.DEFAULT_MAPFILE);
+        quantumGenerator = new QuantumGenerator();
+        updateManager = new UpdateManager(quantumGenerator);
+        gridBuilder = new GridBuilder(this,GridBuilder.DEFAULT_MAPFILE);
     }
 
     GridManager(double chance){
-        setup(chance,GridBuilder.DEFAULT_MAPFILE);
+        if(chance == 0){
+            quantumGenerator = new QuantumGenerator();
+        }
+        else{
+            quantumGenerator = new QuantumGenerator(chance);
+        }
+        updateManager = new UpdateManager(quantumGenerator);
+        gridBuilder = new GridBuilder(this,GridBuilder.DEFAULT_MAPFILE);
     }
 
     GridManager(double chance, String filename){
-        setup(chance, filename);
-    }
-
-    void setup(double chance,String filename){
         if(chance == 0){
             quantumGenerator = new QuantumGenerator();
         }
@@ -78,6 +83,7 @@ public class GridManager {
 
     public void onCreationComplete(){
         updateManager.setEntranceRoads();
+        updateManager.setExitRoads();
     }
 
     void simulateStep(){

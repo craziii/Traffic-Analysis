@@ -20,15 +20,28 @@ public class Main {
             new Argument("o", "output","output map to file in a rudimentary format once mapping has been completed", "TRUE/FALSE")
     };
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
+        /*
         searchArguments(args);
         Util.Logging.log("<NEW PROCESS STARTED>", Util.Logging.LogLevel.INFO);
         if(helpRequested){
             Util.ArgumentHandler.getOptions(options);
+            System.exit(0);
         }
-        //GridManager gridManager = new GridManager(rngChance,mapFile);
-        //gridManager.createWorld();
-        //gridManager.simulateSteps(stepsToSimulate);
+
+         */
+        forceArguments();
+        GridManager gridManager = new GridManager(rngChance,mapFile);
+        gridManager.createWorld();
+        gridManager.simulateSteps(stepsToSimulate);
+        System.exit(0);
+    }
+
+    static void forceArguments(){
+        rngChance = 0.5;
+        mapFile = "Map.csv";
+        logToFile = true;
+        stepsToSimulate = 100;
     }
 
     static void searchArguments(String[] args){

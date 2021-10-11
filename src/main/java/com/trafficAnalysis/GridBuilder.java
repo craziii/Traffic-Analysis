@@ -1,5 +1,7 @@
 package com.trafficAnalysis;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +16,8 @@ public class GridBuilder {
 
     File mapFile;
     GridManager gridManager;
-    Map<int[], UUID[]> worldMap;
-    Map<int[], Util.WorldBuilderUtil.DirNum[]> intersectionMapping;
+    Map<ImmutablePair<Integer,Integer>, UUID[]> worldMap;
+    Map<ImmutablePair<Integer,Integer>, Util.WorldBuilderUtil.DirNum[]> intersectionMapping;
 
     GridBuilder(GridManager gm){
         setup(gm,DEFAULT_MAPFILE);
@@ -40,9 +42,10 @@ public class GridBuilder {
         String[] fileLines = Util.FileManager.readFile(mapFile);
         for(int i = 0; i < Objects.requireNonNull(fileLines).length; i++){
             String[] parts = Util.WorldBuilderUtil.lineToParts(fileLines[i]);
-            for(int j = 0; j < parts.length; j++){
+            for(int j = 0; j < parts.length; j++) {
                 Util.WorldBuilderUtil.DirNum[] dirNums = Util.WorldBuilderUtil.stringToDirNumArray(parts[j]);
-                intersectionMapping.put(new int[]{i,j},dirNums);
+                ImmutablePair<Integer,Integer> tempPair = new ImmutablePair<>(i,j);
+                intersectionMapping.put(tempPair, dirNums);
             }
         }
     }
@@ -51,39 +54,46 @@ public class GridBuilder {
         //TODO: STEP 1 - FIND THE SIZE OF THE MAP
         int maxWidth = -1;
         int maxHeight = -1;
-        for(int[] keys:intersectionMapping.keySet()){
-            if(keys[0] > maxWidth){
-                maxWidth = keys[0];
+        for(ImmutablePair<Integer,Integer> keys:intersectionMapping.keySet()){
+            if(keys.left > maxWidth){
+                maxWidth = keys.left;
             }
-            if(keys[1] > maxHeight){
-                maxHeight = keys[1];
+            if(keys.right > maxHeight){
+                maxHeight = keys.right;
             }
         }
         //TODO: STEP 2 - FIND THE DIRECTIONS OF INTERSECTION AT EACH POINT
-        for(int i = 0; i < maxWidth; i++){
-            for(int j = 0; j < maxHeight; j++) {
-                Util.WorldBuilderUtil.DirNum[] dirNums = intersectionMapping.get(new int[]{i, j});
-                int[] worldLocation = new int[]{(i * 2) + 1, (j * 2) + 1};
+        for(int i = 0; i <= maxWidth; i++){
+            for(int j = 0; j <= maxHeight; j++) {
+                ImmutablePair<Integer,Integer> tempPair = new ImmutablePair<>(i,j);
+                Util.WorldBuilderUtil.DirNum[] dirNums = intersectionMapping.get(tempPair);
+                Integer[] worldLocation = {(i * 2) + 1, (j * 2) + 1};
                 //TODO: STEP 3 - CREATE THE ROADS NECESSARY
-                for(Util.WorldBuilderUtil.DirNum dirNum:dirNums){
-                    Road[] newRoadPair = createRoadPair(getNewLocation(worldLocation,dirNum.dir),dirNum.num);
-                    if(newRoadPair != null){
-                        worldMap.put(getNewLocation(worldLocation, dirNum.dir),new UUID[]{newRoadPair[0].getUuid(),newRoadPair[1].getUuid()});
-                        Util.Logging.log("Created RoadPair ["+newRoadPair[0].getUuid()+","+newRoadPair[1].getUuid()+"] at worldmap location ["+getNewLocation(worldLocation,dirNum.dir)[0]+","+getNewLocation(worldLocation,dirNum.dir)[1]+"]", Util.Logging.LogLevel.INFO);
+                if(dirNums.length != 0) {
+                    for (Util.WorldBuilderUtil.DirNum dirNum : dirNums) {
+                        Integer[] tempWorldLocation = getNewLocation(worldLocation, dirNum.dir);
+                        Road[] newRoadPair = createRoadPair(tempWorldLocation, dirNum.num);
+                        if (newRoadPair != null) {
+                            UUID[] tempUuids = {newRoadPair[0].getUuid(), newRoadPair[1].getUuid()};
+                            ImmutablePair<Integer,Integer> tempWorldPair = new ImmutablePair<>(tempWorldLocation[0],tempWorldLocation[1]);
+                            worldMap.put(tempWorldPair, tempUuids);
+                            Util.Logging.log("Created RoadPair [" + newRoadPair[0].getUuid() + "," + newRoadPair[1].getUuid() + "] at worldmap location [" + getNewLocation(worldLocation, dirNum.dir)[0] + "," + getNewLocation(worldLocation, dirNum.dir)[1] + "]", Util.Logging.LogLevel.INFO);
+                        }
                     }
                 }
             }
         }
         //TODO: STEP 5 - CREATE AND LINK INTERSECTIONS WITH ROADS
-        for(int i = 0; i < maxWidth; i++) {
-            for (int j = 0; j < maxHeight; j++) {
-                int[] worldLocation = new int[]{(i * 2) + 1, (j * 2) + 1};
+        for(int i = 0; i <= maxWidth; i++) {
+            for (int j = 0; j <= maxHeight; j++) {
+                Integer[] worldLocation = {(i * 2) + 1, (j * 2) + 1};
                 Road[] roads = new Road[8];
                 for(int count = 0; count < 4; count++){
-                    int[] roadLocation = getNewLocation(worldLocation,UpdateManager.intToDirection(count));
+                    Integer[] roadLocation = getNewLocation(worldLocation,UpdateManager.intToDirection(count));
                     UUID[] uuids = new UUID[2];
-                    if(worldMap.containsKey(roadLocation)){
-                        uuids = worldMap.get(roadLocation);
+                    ImmutablePair<Integer,Integer> tempPair = new ImmutablePair<>(roadLocation[0],roadLocation[1]);
+                    if(worldMap.containsKey(tempPair)){
+                        uuids = worldMap.get(tempPair);
                     }
                     if(uuids != null){
                         roads[count] = gridManager.getRoad(uuids[0]);
@@ -95,8 +105,20 @@ public class GridBuilder {
                     }
                 }
                 Intersection intersection = gridManager.createIntersection(roads);
-                worldMap.put(worldLocation,new UUID[]{intersection.getUuid()});
+                ImmutablePair<Integer,Integer> tempWorldPair = new ImmutablePair<>(worldLocation[0],worldLocation[1]);
+                UUID[] tempUUID = new UUID[]{intersection.getUuid()};
+                worldMap.put(tempWorldPair,tempUUID);
                 Util.Logging.log("Created Intersection ["+intersection.getUuid()+"] at worldmap location ["+worldLocation[0]+","+worldLocation[1]+"]", Util.Logging.LogLevel.INFO);
+                for(int count = 0; count < roads.length; count++){
+                    if(roads[count] != null){
+                        if(count < 4){
+                            roads[count].setOutIntersection(intersection);
+                        }
+                        else{
+                            roads[count].setInIntersection(intersection);
+                        }
+                    }
+                }
             }
         }
         if(Main.outputMapToFile){
@@ -107,41 +129,42 @@ public class GridBuilder {
     void writeMapToFile(){
         int maxWidth = -1;
         int maxHeight = -1;
-        for(int[] keys:worldMap.keySet()){
-            if(keys[0] > maxWidth){
-                maxWidth = keys[0];
+        for(ImmutablePair<Integer,Integer> keys:worldMap.keySet()){
+            if(keys.left > maxWidth){
+                maxWidth = keys.left;
             }
-            if(keys[1] > maxHeight){
-                maxHeight = keys[1];
+            if(keys.right > maxHeight){
+                maxHeight = keys.right;
             }
         }
         List<String> lines = new ArrayList<>();
-        for(int i = 0; i < maxWidth; i++){
+        for(int i = 0; i <= maxWidth; i++){
             StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < maxHeight; j++){
-                if(worldMap.containsKey(new int[]{i,j})){
-                    UUID uuid = worldMap.get(new int[]{i,j})[0];
-                    String output;
+            for (int j = 0; j <= maxHeight; j++){
+                ImmutablePair<Integer,Integer> tempWorldPair = new ImmutablePair<>(i,j);
+                String output = "x";
+                if(worldMap.containsKey(tempWorldPair)){
+                    UUID uuid = worldMap.get(tempWorldPair)[0];
                     if(gridManager.updateManager.roadMap.containsKey(uuid)){
                         output = "r";
                     }
                     else if(gridManager.updateManager.intersectionMap.containsKey(uuid)){
                         output = "i";
                     }
-                    else{
-                        output = "x";
-                    }
-                    sb.append(output);
-                    sb.append(Util.FileManager.DEFAULT_DELIMITER);
                 }
+                sb.append(output);
+                sb.append(Util.FileManager.DEFAULT_DELIMITER);
             }
             lines.add(sb.toString());
         }
-        Util.FileManager.writeFile("map-"+Util.Logging.getTimestamp(),lines.toArray(new String[0]),false);
+        UUID uuid = UUID.randomUUID();
+        Util.FileManager.writeFile("map-"+uuid+".csv",lines.toArray(new String[0]),false);
+        Util.Logging.log("Writing mapfile to [map-"+uuid+".csv]", Util.Logging.LogLevel.INFO);
     }
 
-    Road[] createRoadPair(int[] location, int nodes){
-        if(!worldMap.containsKey(location)){
+    Road[] createRoadPair(Integer[] location, int nodes){
+        ImmutablePair<Integer,Integer> tempWorldPair = new ImmutablePair<>(location[0],location[1]);
+        if(!worldMap.containsKey(tempWorldPair)){
             Road in = gridManager.createRoad(nodes);
             Road out = gridManager.createRoad(nodes);
             return new Road[]{in,out};
@@ -149,8 +172,8 @@ public class GridBuilder {
         return null;
     }
 
-    int[] getNewLocation(int[] location, UpdateManager.Direction direction){
-        int[] newLocation = new int[2];
+    Integer[] getNewLocation(Integer[] location, UpdateManager.Direction direction){
+        Integer[] newLocation = new Integer[2];
         switch(direction) {
             case north:
                 newLocation[0] = location[0];

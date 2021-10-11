@@ -17,6 +17,7 @@ public class UpdateManager {
     Map<UUID, Node> nodeMap;
     Map<UUID, Road> roadMap;
     Map<UUID, Road> entryRoadMap;
+    Map<UUID, Road> exitRoadMap;
     Map<UUID, Intersection> intersectionMap;
     Map<UUID, UpdateErrors> updateErrorsMap;
 
@@ -38,9 +39,12 @@ public class UpdateManager {
         nodeMoveList = new ArrayList<>();
         intersectionMoveList = new ArrayList<>();
         updateErrorsMap = new HashMap<>();
+        entryRoadMap = new HashMap<>();
+        exitRoadMap = new HashMap<>();
         cycleCounter = 0;
         cyclesToCount = 0;
         quantumGenerator = qg;
+        totalTime = Duration.ZERO;
     }
 
     void addNodeToMap(UUID uuid, Node node){
@@ -63,6 +67,14 @@ public class UpdateManager {
         }
     }
 
+    void setExitRoads(){
+        for(Road road: roadMap.values()){
+            if(road.outIntersection == null){
+                exitRoadMap.put(road.getUuid(),road);
+            }
+        }
+    }
+
     public void runStep(){
         updateCycle();
     }
@@ -75,6 +87,7 @@ public class UpdateManager {
     }
 
     void updateCycle(){
+        cycleCounter++;
         Instant cycleStart = Instant.now();
         nodeMoveList.clear();
         intersectionMoveList.clear();
@@ -110,20 +123,26 @@ public class UpdateManager {
             }
         }
         for (NodeMove nm:intersectionTest) {
-            if(nm.node.parentRoad.outIntersection.hasSpaceForCars()){
-                nodeMoveList.remove(nm);
-                nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+            if(nm.node.parentRoad.outIntersection != null) {
+                if (nm.node.parentRoad.outIntersection.hasSpaceForCars()) {
+                    nodeMoveList.remove(nm);
+                    nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+                } else {
+                    NodeMove temp = nm;
+                    if (nm.move == NodeMoveEnum.moveI2) {
+                        temp.move = NodeMoveEnum.move1;
+                    } else {
+                        temp.move = NodeMoveEnum.noMove;
+                    }
+                    nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
+                }
             }
             else{
                 NodeMove temp = nm;
-                if(nm.move == NodeMoveEnum.moveI2){
-                    temp.move = NodeMoveEnum.move1;
-                }
-                else{
-                    temp.move = NodeMoveEnum.noMove;
-                }
-                nodeMoveList.set(nodeMoveList.indexOf(nm),temp);
+                temp.move = NodeMoveEnum.moveOff;
+                nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
             }
+
         }
         //TODO:STEP 3 - Simulate Movement through intersections
         for (Intersection intersection:intersectionMap.values()) {
@@ -152,6 +171,7 @@ public class UpdateManager {
             switch(nm.move){
                 case move1: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly); break;
                 case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
+                case moveOff: nm.node.setStatus(Node.CarStatus.noCar); break;
             }
         }
         //TODO:STEP 6 - Add New Cars
@@ -175,7 +195,6 @@ public class UpdateManager {
         cycleTime = Duration.between(cycleStart,cycleEnd);
         totalTime = totalTime.plus(cycleTime);
         printMetrics();
-        cycleCounter++;
     }
 
     void printCycleErrors(){
@@ -244,6 +263,7 @@ public class UpdateManager {
         move2,
         moveI1,
         moveI2,
+        moveOff,
         noCar
     }
 
