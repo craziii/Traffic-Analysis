@@ -17,6 +17,7 @@ public class UpdateManager {
     Map<UUID, Node> nodeMap;
     Map<UUID, Road> roadMap;
     Map<UUID, Road> entryRoadMap;
+    Map<UUID, Road> exitRoadMap;
     Map<UUID, Intersection> intersectionMap;
     Map<UUID, UpdateErrors> updateErrorsMap;
 
@@ -38,9 +39,12 @@ public class UpdateManager {
         nodeMoveList = new ArrayList<>();
         intersectionMoveList = new ArrayList<>();
         updateErrorsMap = new HashMap<>();
+        entryRoadMap = new HashMap<>();
+        exitRoadMap = new HashMap<>();
         cycleCounter = 0;
         cyclesToCount = 0;
         quantumGenerator = qg;
+        totalTime = Duration.ZERO;
     }
 
     void addNodeToMap(UUID uuid, Node node){
@@ -63,6 +67,14 @@ public class UpdateManager {
         }
     }
 
+    void setExitRoads(){
+        for(Road road: roadMap.values()){
+            if(road.outIntersection == null){
+                exitRoadMap.put(road.getUuid(),road);
+            }
+        }
+    }
+
     public void runStep(){
         updateCycle();
     }
@@ -75,11 +87,11 @@ public class UpdateManager {
     }
 
     void updateCycle(){
+        cycleCounter++;
         Instant cycleStart = Instant.now();
         nodeMoveList.clear();
         intersectionMoveList.clear();
         updateErrorsMap.clear();
-        long timerStart = System.currentTimeMillis();
         //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
@@ -111,20 +123,26 @@ public class UpdateManager {
             }
         }
         for (NodeMove nm:intersectionTest) {
-            if(nm.node.parentRoad.outIntersection.hasSpaceForCars()){
-                nodeMoveList.remove(nm);
-                nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+            if(nm.node.parentRoad.outIntersection != null) {
+                if (nm.node.parentRoad.outIntersection.hasSpaceForCars()) {
+                    nodeMoveList.remove(nm);
+                    nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+                } else {
+                    NodeMove temp = nm;
+                    if (nm.move == NodeMoveEnum.moveI2) {
+                        temp.move = NodeMoveEnum.move1;
+                    } else {
+                        temp.move = NodeMoveEnum.noMove;
+                    }
+                    nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
+                }
             }
             else{
                 NodeMove temp = nm;
-                if(nm.move == NodeMoveEnum.moveI2){
-                    temp.move = NodeMoveEnum.move1;
-                }
-                else{
-                    temp.move = NodeMoveEnum.noMove;
-                }
-                nodeMoveList.set(nodeMoveList.indexOf(nm),temp);
+                temp.move = NodeMoveEnum.moveOff;
+                nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
             }
+
         }
         //TODO:STEP 3 - Simulate Movement through intersections
         for (Intersection intersection:intersectionMap.values()) {
@@ -153,6 +171,7 @@ public class UpdateManager {
             switch(nm.move){
                 case move1: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly); break;
                 case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
+                case moveOff: nm.node.setStatus(Node.CarStatus.noCar); break;
             }
         }
         //TODO:STEP 6 - Add New Cars
@@ -176,7 +195,6 @@ public class UpdateManager {
         cycleTime = Duration.between(cycleStart,cycleEnd);
         totalTime = totalTime.plus(cycleTime);
         printMetrics();
-        cycleCounter++;
     }
 
     void printCycleErrors(){
@@ -184,7 +202,7 @@ public class UpdateManager {
         for(UUID uuid:updateErrorsMap.keySet()){
             switch(updateErrorsMap.get(uuid)){
                 case carSpawnError: Util.Logging.log("Car failed to spawn on road ["+uuid+"], road was not empty", Util.Logging.LogLevel.ERROR);
-                default: Util.Logging.log("Unknown Error occured at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
+                default: Util.Logging.log("Unknown Error occurred at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
             }
         }
         if(criticalError){
@@ -194,13 +212,13 @@ public class UpdateManager {
 
     }
 
-    void printMetrics(){
-        Util.Logging.log("cycle ["+cycleCounter+"] time taken to calculate: ["+ cycleTime.toMinutesPart() + "m"+cycleTime.toSecondsPart()+"."+cycleTime.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
-        Util.Logging.log("Total time to calculate ["+cycleCounter+"] cycles ["+totalTime.toHoursPart() +"h"+ totalTime.toMinutesPart() + "m"+totalTime.toSecondsPart()+"."+totalTime.toMillisPart()+"s], Time per cycle so far ["+totalTime.dividedBy(cycleCounter).toMinutesPart()+"m"+totalTime.dividedBy(cycleCounter).toSecondsPart()+"."+totalTime.dividedBy(cycleCounter).toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
-        if(cyclesToCount > 0){
+    void printMetrics() {
+        Util.Logging.log("cycle [" + cycleCounter + "] time taken to calculate: [" + cycleTime.toMinutesPart() + "m" + cycleTime.toSecondsPart() + "." + cycleTime.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Total time to calculate [" + cycleCounter + "] cycles [" + totalTime.toHoursPart() + "h" + totalTime.toMinutesPart() + "m" + totalTime.toSecondsPart() + "." + totalTime.toMillisPart() + "s], Time per cycle so far [" + totalTime.dividedBy(cycleCounter).toMinutesPart() + "m" + totalTime.dividedBy(cycleCounter).toSecondsPart() + "." + totalTime.dividedBy(cycleCounter).toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
+        if (cyclesToCount > 0) {
             long cyclesLeft = cyclesToCount - cycleCounter;
             Duration timeLeft = totalTime.dividedBy(cycleCounter).multipliedBy(cyclesLeft);
-            Util.Logging.log("Estimated Time to Completion with ["+cyclesLeft+"] cycles left, ["+timeLeft.toHoursPart()+"h"+timeLeft.toMinutesPart()+"m"+timeLeft.toSecondsPart()+"."+timeLeft.toMillisPart()+"s]", Util.Logging.LogLevel.INFO);
+            Util.Logging.log("Estimated Time to Completion with [" + cyclesLeft + "] cycles left, [" + timeLeft.toHoursPart() + "h" + timeLeft.toMinutesPart() + "m" + timeLeft.toSecondsPart() + "." + timeLeft.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
         }
     }
 
@@ -217,6 +235,20 @@ public class UpdateManager {
         return true;
     }
 
+    public static int directionToInt(Direction dir){
+        return dir.ordinal();
+    }
+
+    public static Direction intToDirection(int i){
+        switch (i){
+            case 0: return Direction.north;
+            case 1: return Direction.east;
+            case 2: return Direction.south;
+            case 3: return Direction.west;
+            default: return Direction.none;
+        }
+    }
+
     public enum Direction {
         north,
         east,
@@ -231,6 +263,7 @@ public class UpdateManager {
         move2,
         moveI1,
         moveI2,
+        moveOff,
         noCar
     }
 
