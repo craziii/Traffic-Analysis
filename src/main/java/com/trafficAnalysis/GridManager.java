@@ -1,7 +1,10 @@
 package com.trafficAnalysis;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GridManager {
 
@@ -16,8 +19,6 @@ public class GridManager {
     GridBuilder gridBuilder;
     QuantumGenerator quantumGenerator;
     UpdateManager updateManager;
-    List<Intersection> intersections;
-    List<Road> roads;
 
     GridManager(){
         setup(0,GridBuilder.DEFAULT_MAPFILE);
@@ -39,28 +40,34 @@ public class GridManager {
             quantumGenerator = new QuantumGenerator(chance);
         }
         updateManager = new UpdateManager(quantumGenerator);
-        intersections = new ArrayList<>();
-        roads = new ArrayList<>();
         gridBuilder = new GridBuilder(this,filename);
     }
 
     public void createWorld(){
+        Instant start = Instant.now();
         gridBuilder.fileToIntersectionMapping();
         gridBuilder.intersectionMappingToWorldMap();
         onCreationComplete();
+        Instant end = Instant.now();
+        Duration worldCreationDuration = Duration.between(start,end);
+        Util.Logging.log("World Map Complete, time taken to create [" + worldCreationDuration.toMinutesPart() + "m" + worldCreationDuration.toSecondsPart() + "." + worldCreationDuration.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
     }
 
-    public void createIntersection(Road[] roadsArr){
+    public Intersection createIntersection(Road[] roadsArr){
         Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).build();
-        intersections.add(intersection);
         updateManager.addIntersectionToMap(intersection.getUuid(),intersection);
+        return intersection;
     }
 
-    public void createRoad(int numNodes){
+    public Road getRoad(UUID uuid){
+        return updateManager.roadMap.get(uuid);
+    }
+
+    public Road createRoad(int numNodes){
         Road road = new Road(numNodes);
-        roads.add(road);
         updateManager.addRoadToMap(road.getUuid(), road);
         documentNodes(road.getNodes());
+        return road;
     }
 
     void documentNodes(com.trafficAnalysis.Node[] nodes){

@@ -176,6 +176,8 @@ public class Util {
 
     public static class FileManager{
 
+        public static String DEFAULT_DELIMITER = ",";
+
         public static boolean writeFile(String fileName, String[] lines, boolean overwrite) {
             try {
                 File file = new File(fileName);
@@ -260,11 +262,15 @@ public class Util {
 
         private static void printIntro() {
             System.console().writer().println("\nTraffic Analysis Software for use with paper.\n");
-            System.console().writer().println("Argument format: java -jar traffic-analysis.jar --option=value\n\n");
+            System.console().writer().println("Argument format: java -jar traffic-analysis.jar --option=\"value\"\n\n");
         }
 
         public static void printOption(String letter, String option, String info, String values){
             System.console().writer().println("(-"+letter+"),(--"+option+"), "+info+". values: "+values+"\n");
+        }
+
+        public static void printOption(Argument argument){
+            System.console().writer().println("(-"+argument.letter+"),(--"+argument.name+"), "+argument.information+". values: "+argument.values+"\n");
         }
 
         public static double searchArgDouble(String letter, String name, String[] args){
@@ -283,6 +289,10 @@ public class Util {
             return 0;
         }
 
+        public static double searchArgDouble(Argument argument, String[] args){
+            return searchArgDouble(argument.letter,argument.name,args);
+        }
+
         public static String searchArgString(String letter, String name, String[] args){
             for(String arg:args){
                 String[] parts = arg.split("=");
@@ -297,6 +307,10 @@ public class Util {
                 }
             }
             return "";
+        }
+
+        public static String searchArgString(Argument argument, String[] args){
+            return searchArgString(argument.letter,argument.name,args);
         }
 
         public static Boolean searchArgBoolean(String letter, String name, String[] args){
@@ -318,6 +332,10 @@ public class Util {
             return false;
         }
 
+        public static Boolean searchArgBoolean(Argument argument, String[] args){
+            return searchArgBoolean(argument.letter,argument.name,args);
+        }
+
         public static Boolean searchArgNone(String letter, String name, String[] args){
             for(String arg:args){
                 String[] parts = arg.split("=");
@@ -326,6 +344,10 @@ public class Util {
                 }
             }
             return false;
+        }
+
+        public static Boolean searchArgNone(Argument argument, String[] args){
+            return searchArgNone(argument.letter,argument.name,args);
         }
 
         public static long searchArgLong(String letter, String name, String[] args){
@@ -344,22 +366,24 @@ public class Util {
             return 0;
         }
 
+        public static Long searchArgLong(Argument argument, String[] args){
+            return searchArgLong(argument.letter,argument.name,args);
+        }
+
         public static class Argument{
             String letter;
             String name;
             String information;
             String values;
 
-            public Argument(String l, String n, String i, String v){
-                letter = l;
-                name = n;
-                information = i;
-                values = v;
+            public Argument(String letter, String name, String information, String values){
+                this.letter = letter;
+                this.name = name;
+                this.information = information;
+                this.values = values;
             }
         }
 
     }
-
-
 
 }

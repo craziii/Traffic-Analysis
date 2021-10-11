@@ -194,15 +194,6 @@ public class UpdateManager {
     }
 
     void printMetrics() {
-        if (Main.logToFile) {
-            Util.Logging.logToFile("cycle [" + cycleCounter + "] time taken to calculate: [" + cycleTime.toMinutesPart() + "m" + cycleTime.toSecondsPart() + "." + cycleTime.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
-            Util.Logging.logToFile("Total time to calculate [" + cycleCounter + "] cycles [" + totalTime.toHoursPart() + "h" + totalTime.toMinutesPart() + "m" + totalTime.toSecondsPart() + "." + totalTime.toMillisPart() + "s], Time per cycle so far [" + totalTime.dividedBy(cycleCounter).toMinutesPart() + "m" + totalTime.dividedBy(cycleCounter).toSecondsPart() + "." + totalTime.dividedBy(cycleCounter).toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
-            if (cyclesToCount > 0) {
-                long cyclesLeft = cyclesToCount - cycleCounter;
-                Duration timeLeft = totalTime.dividedBy(cycleCounter).multipliedBy(cyclesLeft);
-                Util.Logging.logToFile("Estimated Time to Completion with [" + cyclesLeft + "] cycles left, [" + timeLeft.toHoursPart() + "h" + timeLeft.toMinutesPart() + "m" + timeLeft.toSecondsPart() + "." + timeLeft.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
-            }
-        }
         Util.Logging.log("cycle [" + cycleCounter + "] time taken to calculate: [" + cycleTime.toMinutesPart() + "m" + cycleTime.toSecondsPart() + "." + cycleTime.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
         Util.Logging.log("Total time to calculate [" + cycleCounter + "] cycles [" + totalTime.toHoursPart() + "h" + totalTime.toMinutesPart() + "m" + totalTime.toSecondsPart() + "." + totalTime.toMillisPart() + "s], Time per cycle so far [" + totalTime.dividedBy(cycleCounter).toMinutesPart() + "m" + totalTime.dividedBy(cycleCounter).toSecondsPart() + "." + totalTime.dividedBy(cycleCounter).toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
         if (cyclesToCount > 0) {
@@ -223,6 +214,20 @@ public class UpdateManager {
             }
         }
         return true;
+    }
+
+    public static int directionToInt(Direction dir){
+        return dir.ordinal();
+    }
+
+    public static Direction intToDirection(int i){
+        switch (i){
+            case 0: return Direction.north;
+            case 1: return Direction.east;
+            case 2: return Direction.south;
+            case 3: return Direction.west;
+            default: return Direction.none;
+        }
     }
 
     public enum Direction {
