@@ -16,17 +16,22 @@ public class GridBuilder {
     Map<int[], Util.WorldBuilderUtil.DirNum[]> intersectionMapping;
 
     GridBuilder(GridManager gm){
-        mapFile = new File(DEFAULT_MAPFILE);
-        gridManager = gm;
-        worldMap = new HashMap<>();
-        intersectionMapping = new HashMap<>();
+        setup(gm,DEFAULT_MAPFILE);
     }
 
     GridBuilder(GridManager gm, String filename){
+        setup(gm,filename);
+    }
+
+    void setup(GridManager gm, String filename){
         mapFile = new File(filename);
         gridManager = gm;
         worldMap = new HashMap<>();
         intersectionMapping = new HashMap<>();
+        if(!mapFile.exists()){
+            Util.Logging.log("No mapfile found with name [" + mapFile.getName()+"] please check that this is the correct mapfile before restarting. Exiting.", Util.Logging.LogLevel.CRITICAL);
+            System.exit(0);
+        }
     }
 
     void fileToIntersectionMapping(){

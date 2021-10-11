@@ -20,14 +20,18 @@ public class GridManager {
     List<Road> roads;
 
     GridManager(){
-        setup(0);
+        setup(0,GridBuilder.DEFAULT_MAPFILE);
     }
 
     GridManager(double chance){
-        setup(chance);
+        setup(chance,GridBuilder.DEFAULT_MAPFILE);
     }
 
-    void setup(double chance){
+    GridManager(double chance, String filename){
+        setup(chance, filename);
+    }
+
+    void setup(double chance,String filename){
         if(chance == 0){
             quantumGenerator = new QuantumGenerator();
         }
@@ -37,13 +41,12 @@ public class GridManager {
         updateManager = new UpdateManager(quantumGenerator);
         intersections = new ArrayList<>();
         roads = new ArrayList<>();
-        gridBuilder = new GridBuilder(this);
+        gridBuilder = new GridBuilder(this,filename);
     }
 
-    void createWorld(){
+    public void createWorld(){
         gridBuilder.fileToIntersectionMapping();
         gridBuilder.intersectionMappingToWorldMap();
-        updateManager.
         onCreationComplete();
     }
 

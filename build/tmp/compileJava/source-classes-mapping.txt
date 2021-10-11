@@ -1,15 +1,15 @@
-com/trafficAnalysis/Util.java
- com.trafficAnalysis.Util
- com.trafficAnalysis.Util$1
- com.trafficAnalysis.Util$FileManager
- com.trafficAnalysis.Util$Logging
- com.trafficAnalysis.Util$Logging$LogLevel
- com.trafficAnalysis.Util$WorldBuilderUtil
- com.trafficAnalysis.Util$WorldBuilderUtil$DirNum
-com/trafficAnalysis/Main.java
- com.trafficAnalysis.Main
-com/trafficAnalysis/GridBuilder.java
- com.trafficAnalysis.GridBuilder
+com/trafficAnalysis/Node.java
+ com.trafficAnalysis.Node
+ com.trafficAnalysis.Node$1
+ com.trafficAnalysis.Node$CarStatus
+com/trafficAnalysis/Intersection4Way.java
+ com.trafficAnalysis.Intersection4Way
+ com.trafficAnalysis.Intersection4Way$1
+com/trafficAnalysis/Intersection.java
+ com.trafficAnalysis.Intersection
+ com.trafficAnalysis.Intersection$1
+ com.trafficAnalysis.Intersection$IntersectionBuilder
+ com.trafficAnalysis.Intersection$IntersectionType
 com/trafficAnalysis/Intersection3Way.java
  com.trafficAnalysis.Intersection3Way
  com.trafficAnalysis.Intersection3Way$1
@@ -29,18 +29,20 @@ com/trafficAnalysis/GridManager.java
 com/trafficAnalysis/Intersection3WayMinor.java
  com.trafficAnalysis.Intersection3WayMinor
  com.trafficAnalysis.Intersection3WayMinor$1
-com/trafficAnalysis/Intersection.java
- com.trafficAnalysis.Intersection
- com.trafficAnalysis.Intersection$1
- com.trafficAnalysis.Intersection$IntersectionBuilder
- com.trafficAnalysis.Intersection$IntersectionType
-com/trafficAnalysis/Node.java
- com.trafficAnalysis.Node
- com.trafficAnalysis.Node$1
- com.trafficAnalysis.Node$CarStatus
-com/trafficAnalysis/Intersection4Way.java
- com.trafficAnalysis.Intersection4Way
- com.trafficAnalysis.Intersection4Way$1
+com/trafficAnalysis/Util.java
+ com.trafficAnalysis.Util
+ com.trafficAnalysis.Util$1
+ com.trafficAnalysis.Util$ArgumentHandler
+ com.trafficAnalysis.Util$ArgumentHandler$Argument
+ com.trafficAnalysis.Util$FileManager
+ com.trafficAnalysis.Util$Logging
+ com.trafficAnalysis.Util$Logging$LogLevel
+ com.trafficAnalysis.Util$WorldBuilderUtil
+ com.trafficAnalysis.Util$WorldBuilderUtil$DirNum
+com/trafficAnalysis/Main.java
+ com.trafficAnalysis.Main
+com/trafficAnalysis/GridBuilder.java
+ com.trafficAnalysis.GridBuilder
 com/trafficAnalysis/UpdateManager.java
  com.trafficAnalysis.UpdateManager
  com.trafficAnalysis.UpdateManager$1
