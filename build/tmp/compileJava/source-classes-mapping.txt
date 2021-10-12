@@ -2,8 +2,6 @@ com/trafficAnalysis/Rotation.java
  com.trafficAnalysis.Rotation
  com.trafficAnalysis.Rotation$1
  com.trafficAnalysis.Rotation$Axes
-com/trafficAnalysis/Main.java
- com.trafficAnalysis.Main
 com/trafficAnalysis/QuantumGenerator.java
  com.trafficAnalysis.QuantumGenerator
 com/trafficAnalysis/Road.java
@@ -20,6 +18,8 @@ com/trafficAnalysis/Util.java
  com.trafficAnalysis.Util$WorldBuilderUtil$DirNum
 com/trafficAnalysis/GridManager.java
  com.trafficAnalysis.GridManager
+com/trafficAnalysis/Main.java
+ com.trafficAnalysis.Main
 com/trafficAnalysis/Intersection3WayMinor.java
  com.trafficAnalysis.Intersection3WayMinor
  com.trafficAnalysis.Intersection3WayMinor$1

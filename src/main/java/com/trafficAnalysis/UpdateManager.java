@@ -241,9 +241,9 @@ public class UpdateManager {
 
     void writeCars(){
         if(cycleCounter == 1){
-            Util.FileManager.writeFile("Cars.csv","",true);
+            Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv","",true);
         }
-        Util.FileManager.writeFile("Cars.csv","CYCLE COUNT:"+cycleCounter,false);
+        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv","CYCLE COUNT:"+cycleCounter,false);
         List<String> lines = new ArrayList<>();
         for(Road road:roadMap.values()){
             StringBuilder sb = new StringBuilder();
@@ -259,14 +259,14 @@ public class UpdateManager {
             sb.append("]");
             lines.add(sb.toString());
         }
-        Util.FileManager.writeFile("Cars.csv",lines.toArray(new String[0]),false);
+        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv",lines.toArray(new String[0]),false);
     }
 
     void writePressure(){
         if(cycleCounter == 1){
-            Util.FileManager.writeFile("Pressure.csv","",true);
+            Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv","",true);
         }
-        Util.FileManager.writeFile("Pressure.csv","CYCLE COUNT:"+cycleCounter,false);
+        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv","CYCLE COUNT:"+cycleCounter,false);
         double maxPressure = -1;
         String maxPressureUUID = "";
         double totalPressure = 0;
@@ -283,7 +283,7 @@ public class UpdateManager {
             }
         }
         lines.add("Max Pressure from Roads is from Road:["+maxPressureUUID+"] with a pressure of:["+maxPressure+"]");
-        Util.FileManager.writeFile("Pressure.csv",lines.toArray(new String[0]),false);
+        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv",lines.toArray(new String[0]),false);
     }
 
     void printCycleErrors(){

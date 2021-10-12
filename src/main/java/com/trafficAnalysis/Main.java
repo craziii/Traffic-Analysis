@@ -1,5 +1,7 @@
 package com.trafficAnalysis;
 
+import java.util.UUID;
+
 import static com.trafficAnalysis.Util.ArgumentHandler.*;
 
 public class Main {
@@ -14,6 +16,7 @@ public class Main {
     public static long updateRate = 1;
     public static boolean verboseLogging = false;
     public static boolean runInEditor = false;
+    public static UUID globalUUID;
 
     static Argument[] options = {
             new Argument("i","intersection","the chance between 0 and 1 for intersections to use","0 - 1 inclusive"),
@@ -28,6 +31,9 @@ public class Main {
     };
 
     public static void main(String[] args){
+        globalUUID = UUID.randomUUID();
+        Util.FileManager.createFolder("output");
+        Util.FileManager.createFolder(globalUUID.toString());
         Util.Logging.log("<NEW PROCESS STARTED>", Util.Logging.LogLevel.INFO);
         if(args.length == 0){
             forceArguments();
