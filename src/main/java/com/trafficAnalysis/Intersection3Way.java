@@ -53,7 +53,7 @@ public class Intersection3Way extends Intersection{
                 offset = i;
             }
         }
-        if(quantumGenerator.getNextBoolean()){ // First, next clockwise option
+        if(quantumGenerator.getNextBoolean(0)){ // First, next clockwise option
             switch (offset) {
                 case 0:
                     temp.out = directions[1];
@@ -123,21 +123,21 @@ public class Intersection3Way extends Intersection{
             }
             switch(currentOutput) {
                 case 0:
-                    if (quantumGenerator.getNextBoolean()) {
+                    if (quantumGenerator.getNextBoolean(0)) {
                         lights.add(outputDirections[1]);
                     } else {
                         lights.add(outputDirections[2]);
                     }
                     break;
                 case 1:
-                    if (quantumGenerator.getNextBoolean()) {
+                    if (quantumGenerator.getNextBoolean(0)) {
                         lights.add(outputDirections[0]);
                     } else {
                         lights.add(outputDirections[2]);
                     }
                     break;
                 case 2:
-                    if (quantumGenerator.getNextBoolean()) {
+                    if (quantumGenerator.getNextBoolean(0)) {
                         lights.add(outputDirections[0]);
                     } else {
                         lights.add(outputDirections[1]);

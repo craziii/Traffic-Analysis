@@ -65,7 +65,7 @@ public class Intersection2Way extends Intersection{
                 }
             }
             outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
-            if(quantumGenerator.getNextBoolean()){
+            if(quantumGenerator.getNextBoolean(0)){
                 lights.add(outputDirections[0]);
             }
             else{

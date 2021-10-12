@@ -86,47 +86,55 @@ public class UpdateManager {
         }
     }
 
-    void updateCycle(){
+    void updateCycle() {
         cycleCounter++;
         Instant cycleStart = Instant.now();
         nodeMoveList.clear();
         intersectionMoveList.clear();
         updateErrorsMap.clear();
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 1", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
-        for (Map.Entry<UUID, Road> pair:roadMap.entrySet()) {
+        for (Map.Entry<UUID, Road> pair : roadMap.entrySet()) {
             Future<NodeMove[]> futureNodeTask = threadPool.submit(() -> getWantedMovement(pair.getValue()));
             nodeTasks.add(futureNodeTask);
         }
         boolean nodeTaskBoolean = false;
-        while(!nodeTaskBoolean) {
+        while (!nodeTaskBoolean) {
             nodeTaskBoolean = checkNodeTasks(nodeTasks);
         }
-        for (Future<NodeMove[]> task: nodeTasks) {
+        for (Future<NodeMove[]> task : nodeTasks) {
             try {
                 nodeMoveList.addAll(Arrays.asList(task.get()));
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        threadPool.shutdown();
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 2", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 2 - Move this info to Intersections to decide if some moves cannot be made
         List<NodeMove> intersectionTest = new ArrayList<>();
-        for (NodeMove nm:nodeMoveList) {
-            if(nm.move == NodeMoveEnum.moveI1){
+        for (NodeMove nm : nodeMoveList) {
+            if (nm.move == NodeMoveEnum.moveI1) {
                 intersectionTest.add(nm);
             }
         }
-        for (NodeMove nm:nodeMoveList) {
-            if(nm.move == NodeMoveEnum.moveI2){
+        for (NodeMove nm : nodeMoveList) {
+            if (nm.move == NodeMoveEnum.moveI2) {
                 intersectionTest.add(nm);
             }
         }
-        for (NodeMove nm:intersectionTest) {
-            if(nm.node.parentRoad.outIntersection != null) {
+        for (NodeMove nm : intersectionTest) {
+            if (nm.node.parentRoad.outIntersection != null) {
                 if (nm.node.parentRoad.outIntersection.hasSpaceForCars()) {
                     nodeMoveList.remove(nm);
                     nm.node.parentRoad.outIntersection.addCar(nm.node.parentRoad);
+                    nm.node.carExitingNode();
                 } else {
                     NodeMove temp = nm;
                     if (nm.move == NodeMoveEnum.moveI2) {
@@ -136,65 +144,146 @@ public class UpdateManager {
                     }
                     nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
                 }
-            }
-            else{
+            } else {
                 NodeMove temp = nm;
                 temp.move = NodeMoveEnum.moveOff;
                 nodeMoveList.set(nodeMoveList.indexOf(nm), temp);
             }
 
         }
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 3", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 3 - Simulate Movement through intersections
-        for (Intersection intersection:intersectionMap.values()) {
+        for (Intersection intersection : intersectionMap.values()) {
             int count = 0;
-            switch (intersection.getIntersectionType()){
-                case twoWay: count = 2; break;
-                case threeWay: count = 3; break;
-                case fourWay: count = 4; break;
+            switch (intersection.getIntersectionType()) {
+                case twoWay:
+                    count = 2;
+                    break;
+                case threeWay:
+                    count = 3;
+                    break;
+                case fourWay:
+                    count = 4;
+                    break;
             }
-            for(int i = 0; i < count; i++){
-                if(!intersection.isEmpty()){
+            for (int i = 0; i < count; i++) {
+                if (!intersection.isEmpty()) {
                     IntersectionMove tempIntersectionMove = intersection.getNextIntersectionOutput(quantumGenerator);
-                    if(tempIntersectionMove != null){
+                    if (tempIntersectionMove != null) {
                         intersectionMoveList.add(tempIntersectionMove);
                     }
-                }
-                else{
+                } else {
                     break;
                 }
             }
         }
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 4", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 4 - Pass movement information back to nodes
         //Done inside simulations
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 5", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 5 - Move cars in nodes
-        for (NodeMove nm:nodeMoveList) {
-            switch(nm.move){
-                case move1: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly); break;
-                case move2: nm.node.setStatus(Node.CarStatus.noCar); nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed); break;
-                case moveOff: nm.node.setStatus(Node.CarStatus.noCar); break;
+        for (NodeMove nm : nodeMoveList) {
+            switch (nm.move) {
+                case move1:
+                    nm.node.setStatus(Node.CarStatus.noCar);
+                    nm.node.getNodeAfter().setStatus(Node.CarStatus.movingSlowly);
+                    break;
+                case move2:
+                    nm.node.setStatus(Node.CarStatus.noCar);
+                    nm.node.getNodeAfter().getNodeAfter().setStatus(Node.CarStatus.movingFullSpeed);
+                    break;
+                case moveOff:
+                    nm.node.setStatus(Node.CarStatus.noCar);
+                    break;
             }
         }
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step 6", Util.Logging.LogLevel.INFO);
+        }
         //TODO:STEP 6 - Add New Cars
-        for(Road road:entryRoadMap.values()){
-            if(quantumGenerator.getNextBoolean()){
-                if(!road.getFirstNode().addCar()){
-                    updateErrorsMap.put(road.getUuid(),UpdateErrors.carSpawnError);
+        for (Road road : entryRoadMap.values()) {
+            if (quantumGenerator.getNextBoolean(1)) {
+                if (!road.getFirstNode().addCar()) {
+                    updateErrorsMap.put(road.getUuid(), UpdateErrors.carSpawnError);
                 }
             }
         }
+        if(Main.verboseLogging){Util.Logging.log("update cycle, step 7", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 7 - Update lights for next step
         for(Intersection intersection:intersectionMap.values()){
             intersection.updateGreenLights(false);
         }
+        if(Main.verboseLogging){Util.Logging.log("update cycle, step 8", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 8 - Check for Errors
         if(!updateErrorsMap.isEmpty()){
             printCycleErrors();
         }
-        //TODO:STEP 9 - Increment cycle counter
+        if(Main.verboseLogging){Util.Logging.log("update cycle, step 9", Util.Logging.LogLevel.INFO);}
+        //TODO:STEP 9 - Write information to file
+        //if(Main.verboseLogging) {
+            writePressure();
+            writeCars();
+        //}
+        //TODO:STEP 10 - Calculate Metrics
         Instant cycleEnd = Instant.now();
         cycleTime = Duration.between(cycleStart,cycleEnd);
         totalTime = totalTime.plus(cycleTime);
-        printMetrics();
+        if(cycleCounter % Main.updateRate == 0){
+            printMetrics();
+        }
+    }
+
+    void writeCars(){
+        if(cycleCounter == 1){
+            Util.FileManager.writeFile("Cars.csv","",true);
+        }
+        Util.FileManager.writeFile("Cars.csv","CYCLE COUNT:"+cycleCounter,false);
+        List<String> lines = new ArrayList<>();
+        for(Road road:roadMap.values()){
+            StringBuilder sb = new StringBuilder();
+            Integer[] carLocations = road.getCars();
+            if(carLocations.length == 0){
+                continue;
+            }
+            sb.append("Road:["+road.getUuid()+"] has ["+carLocations.length+"] cars in it, cars are at locations[");
+            for(Integer car:carLocations){
+                sb.append(car+",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("]");
+            lines.add(sb.toString());
+        }
+        Util.FileManager.writeFile("Cars.csv",lines.toArray(new String[0]),false);
+    }
+
+    void writePressure(){
+        if(cycleCounter == 1){
+            Util.FileManager.writeFile("Pressure.csv","",true);
+        }
+        Util.FileManager.writeFile("Pressure.csv","CYCLE COUNT:"+cycleCounter,false);
+        double maxPressure = -1;
+        String maxPressureUUID = "";
+        double totalPressure = 0;
+        List<String> lines = new ArrayList<>();
+        for(Road road: roadMap.values()){
+            double tempPressure = road.getTotalPressure();
+            totalPressure = totalPressure + tempPressure;
+            if(tempPressure != 0) {
+                lines.add("Road:[" + road.getUuid() + "] Pressure:[" + tempPressure + "]");
+            }
+            if(tempPressure > maxPressure){
+                maxPressure = tempPressure;
+                maxPressureUUID = road.getUuid().toString();
+            }
+        }
+        lines.add("Max Pressure from Roads is from Road:["+maxPressureUUID+"] with a pressure of:["+maxPressure+"]");
+        Util.FileManager.writeFile("Pressure.csv",lines.toArray(new String[0]),false);
     }
 
     void printCycleErrors(){
@@ -202,7 +291,6 @@ public class UpdateManager {
         for(UUID uuid:updateErrorsMap.keySet()){
             switch(updateErrorsMap.get(uuid)){
                 case carSpawnError: Util.Logging.log("Car failed to spawn on road ["+uuid+"], road was not empty", Util.Logging.LogLevel.ERROR);
-                default: Util.Logging.log("Unknown Error occurred at UUID ["+uuid+"]", Util.Logging.LogLevel.ERROR);
             }
         }
         if(criticalError){
@@ -213,12 +301,12 @@ public class UpdateManager {
     }
 
     void printMetrics() {
-        Util.Logging.log("cycle [" + cycleCounter + "] time taken to calculate: [" + cycleTime.toMinutesPart() + "m" + cycleTime.toSecondsPart() + "." + cycleTime.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
-        Util.Logging.log("Total time to calculate [" + cycleCounter + "] cycles [" + totalTime.toHoursPart() + "h" + totalTime.toMinutesPart() + "m" + totalTime.toSecondsPart() + "." + totalTime.toMillisPart() + "s], Time per cycle so far [" + totalTime.dividedBy(cycleCounter).toMinutesPart() + "m" + totalTime.dividedBy(cycleCounter).toSecondsPart() + "." + totalTime.dividedBy(cycleCounter).toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("cycle [" + cycleCounter + "] time taken to calculate: [" + cycleTime.toMinutesPart() + "m" + cycleTime.toSecondsPart() + "." + Util.getMillis(cycleTime.toMillisPart()) + "s]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Total time to calculate [" + cycleCounter + "] cycles [" + totalTime.toHoursPart() + "h" + totalTime.toMinutesPart() + "m" + totalTime.toSecondsPart() + "." + Util.getMillis(totalTime.toMillisPart()) + "s], Time per cycle so far [" + totalTime.dividedBy(cycleCounter).toMinutesPart() + "m" + totalTime.dividedBy(cycleCounter).toSecondsPart() + "." + Util.getMillis(totalTime.dividedBy(cycleCounter).toMillisPart()) + "s]", Util.Logging.LogLevel.INFO);
         if (cyclesToCount > 0) {
             long cyclesLeft = cyclesToCount - cycleCounter;
             Duration timeLeft = totalTime.dividedBy(cycleCounter).multipliedBy(cyclesLeft);
-            Util.Logging.log("Estimated Time to Completion with [" + cyclesLeft + "] cycles left, [" + timeLeft.toHoursPart() + "h" + timeLeft.toMinutesPart() + "m" + timeLeft.toSecondsPart() + "." + timeLeft.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
+            Util.Logging.log("Estimated Time to Completion with [" + cyclesLeft + "] cycles left, [" + timeLeft.toHoursPart() + "h" + timeLeft.toMinutesPart() + "m" + timeLeft.toSecondsPart() + "." + Util.getMillis(timeLeft.toMillisPart()) + "s]", Util.Logging.LogLevel.INFO);
         }
     }
 

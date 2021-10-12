@@ -16,12 +16,12 @@ public class Road{
     Node firstNode;
     Node lastNode;
 
-    float totalPressure;
+    double totalPressure;
 
     public Road(int nodes){
         nodesInRoad = new ArrayList<>();
         for(int i = 0; i < nodes; i++){
-            Node node = new Node();
+            Node node = new Node(this);
             addNodeToRoad(node);
         }
         organiseNodes();
@@ -31,7 +31,7 @@ public class Road{
 
     public Road(int nodes, Intersection in, Intersection out){
         for(int i = 0; i < nodes; i++){
-            Node node = new Node();
+            Node node = new Node(this);
             addNodeToRoad(node);
         }
         organiseNodes();
@@ -56,12 +56,27 @@ public class Road{
         lastNode.setNodeAfter(null);
     }
 
-    void getTotalPressure(){
+    void writeTotalPressure(){
         float tempPressure = 0;
         for (Node node:nodesInRoad) {
             tempPressure = tempPressure + node.getPressure();
         }
         totalPressure = tempPressure;
+    }
+
+    double getTotalPressure(){
+        writeTotalPressure();
+        return totalPressure;
+    }
+
+    Integer[] getCars(){
+        List<Integer> carPositions = new ArrayList<>();
+        for(int i = 0; i < nodesInRoad.size(); i++){
+            if(nodesInRoad.get(i).getStatus() != Node.CarStatus.noCar){
+                carPositions.add(i);
+            }
+        }
+        return carPositions.toArray(new Integer[0]);
     }
 
     void addNodeToRoad(Node node){

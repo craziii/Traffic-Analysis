@@ -26,23 +26,23 @@ public class GridManager {
         gridBuilder = new GridBuilder(this,GridBuilder.DEFAULT_MAPFILE);
     }
 
-    GridManager(double chance){
-        if(chance == 0){
+    GridManager(double intersectionChance, double carChance){
+        if(intersectionChance == 0 && carChance == 0){
             quantumGenerator = new QuantumGenerator();
         }
         else{
-            quantumGenerator = new QuantumGenerator(chance);
+            quantumGenerator = new QuantumGenerator(intersectionChance,carChance);
         }
         updateManager = new UpdateManager(quantumGenerator);
         gridBuilder = new GridBuilder(this,GridBuilder.DEFAULT_MAPFILE);
     }
 
-    GridManager(double chance, String filename){
-        if(chance == 0){
+    GridManager(double intersectionChance,double carChance, String filename){
+        if(intersectionChance == 0 && carChance == 0){
             quantumGenerator = new QuantumGenerator();
         }
         else{
-            quantumGenerator = new QuantumGenerator(chance);
+            quantumGenerator = new QuantumGenerator(intersectionChance,carChance);
         }
         updateManager = new UpdateManager(quantumGenerator);
         gridBuilder = new GridBuilder(this,filename);

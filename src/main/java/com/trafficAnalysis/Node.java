@@ -16,10 +16,18 @@ public class Node{
         nodeStatus = CarStatus.noCar;
     }
 
+    public Node(Road parent){
+        pressure = 0;
+        createUuid();
+        parentRoad = parent;
+        nodeStatus = CarStatus.noCar;
+    }
+
     public Node(Road parent, float pressureOfNode){
         pressure = pressureOfNode;
         createUuid();
         parentRoad = parent;
+        nodeStatus = CarStatus.noCar;
     }
 
     public Node(Road parent, Node nodeBeforeOrAfter, boolean isAfter){
@@ -31,6 +39,7 @@ public class Node{
         }
         createUuid();
         parentRoad = parent;
+        nodeStatus = CarStatus.noCar;
     }
 
     public Node(Road parent, Node nodeBefore, Node nodeAfter){
@@ -38,6 +47,7 @@ public class Node{
         setNodeAfter(nodeAfter);
         createUuid();
         parentRoad = parent;
+        nodeStatus = CarStatus.noCar;
     }
 
     UpdateManager.NodeMove getNextMove(){
@@ -171,6 +181,10 @@ public class Node{
 
     void carExitingNode(){
         setStatus(CarStatus.noCar);
+    }
+
+    public CarStatus getStatus(){
+        return nodeStatus;
     }
 
     public void setStatus(CarStatus status){

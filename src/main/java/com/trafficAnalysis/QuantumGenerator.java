@@ -7,47 +7,47 @@ import org.redfx.strange.local.SimpleQuantumExecutionEnvironment;
 
 public class QuantumGenerator {
 
-    public static double DEFAULT_CHANCE = 0.5f;
+    public static double DEFAULT_INTERSECTION_CHANCE = 0.5;
+    public static double DEFAULT_CAR_CHANCE = 0.2;
 
     SimpleQuantumExecutionEnvironment sqee;
-    Program programBoolean;
-    Program programFloat;
+    Program[] programs;
 
     public QuantumGenerator(){
-        setup(chanceToAngle(DEFAULT_CHANCE));
+        setup(chanceToAngle(DEFAULT_INTERSECTION_CHANCE),chanceToAngle(DEFAULT_CAR_CHANCE));
     }
 
-    public QuantumGenerator(double chance){
-        setup(chanceToAngle(chance));
+    public QuantumGenerator(double intersectionChance, double carChance){
+        setup(chanceToAngle(intersectionChance),chanceToAngle(carChance));
     }
 
     double chanceToAngle(double chance){
         return Math.asin((chance*2)-1)+(Math.PI/2);
     }
 
-    void setup(double angle){
+    void setup(double angleIntersection, double angleCar){
         sqee = new SimpleQuantumExecutionEnvironment();
-        createQuantumBooleanCircuit(angle);
-        createQuantumFloatCircuit();
+        programs = new Program[2];
+        createQuantumBooleanCircuits(angleIntersection,angleCar);
     }
 
-    private void createQuantumBooleanCircuit(double angle) {
-        programBoolean = new Program(1);
-        Step step = new Step(new Rotation(angle, Rotation.Axes.XAxis,0));
-        programBoolean.addStep(step);
+    private void createQuantumBooleanCircuits(double angleIntersection, double angleCar) {
+        programs[0] = new Program(1);
+        Step step = new Step(new Rotation(angleIntersection, Rotation.Axes.XAxis,0));
+        programs[0].addStep(step);
+        programs[1] = new Program(1);
+        step = new Step(new Rotation(angleCar, Rotation.Axes.XAxis,0));
+        programs[1].addStep(step);
     }
 
-    private void createQuantumFloatCircuit() {
-        programFloat = new Program(4);
+
+    public boolean getNextBoolean(int circuit){
+        return getNextBoolean(circuit,0);
     }
 
-    public boolean getNextBoolean(){
-        return getNextBoolean(0);
-    }
-
-    public boolean getNextBoolean(int count){
+    public boolean getNextBoolean(int circuit,int count){
         try {
-            Result result = sqee.runProgram(programBoolean);
+            Result result = sqee.runProgram(programs[circuit]);
             Qubit qubit = result.getQubits()[0];
             switch (qubit.measure()) {
                 case 0:
@@ -63,7 +63,7 @@ public class QuantumGenerator {
             return false;
         }
         else{
-            return getNextBoolean(count+1);
+            return getNextBoolean(circuit,count+1);
         }
     }
 

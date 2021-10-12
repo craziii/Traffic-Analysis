@@ -27,7 +27,7 @@ public class Intersection4Way extends Intersection{
                 temp.in = UpdateManager.Direction.west;
                 break;
         }
-        if (quantumGenerator.getNextBoolean()) { // First, go straight
+        if (quantumGenerator.getNextBoolean(0)) { // First, go straight
             switch (temp.in) {
                 case north:
                     temp.out = UpdateManager.Direction.south;
@@ -42,7 +42,7 @@ public class Intersection4Way extends Intersection{
                     temp.out = UpdateManager.Direction.east;
                     break;
             }
-        } else if (quantumGenerator.getNextBoolean()) { // Second, left turn
+        } else if (quantumGenerator.getNextBoolean(0)) { // Second, left turn
             switch (temp.in) {
                 case north:
                     temp.out = UpdateManager.Direction.east;
@@ -90,7 +90,7 @@ public class Intersection4Way extends Intersection{
         }
         List<UpdateManager.Direction> lights = new ArrayList<>();
         if (firstTime) {
-            if(quantumGenerator.getNextBoolean()){
+            if(quantumGenerator.getNextBoolean(0)){
                 lights.add(UpdateManager.Direction.north);
                 lights.add(UpdateManager.Direction.south);
             }
