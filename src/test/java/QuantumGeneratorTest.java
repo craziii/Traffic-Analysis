@@ -27,10 +27,10 @@ public class QuantumGeneratorTest{
     }
 
     Boolean[] quantumRNGTest(double chance, int count){
-        QuantumGenerator qg = new QuantumGenerator(chance);
+        QuantumGenerator qg = new QuantumGenerator(chance,chance);
         List<Boolean> bools = new ArrayList<>();
         for(int i = 0; i < count; i++){
-            bools.add(qg.getNextBoolean());
+            bools.add(qg.getNextBoolean(0));
         }
         return bools.toArray(bools.toArray(new Boolean[0]));
     }

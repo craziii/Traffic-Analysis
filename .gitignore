@@ -1,5 +1,5 @@
 /Traffic-Analysis.main.jar
-/build/tmp/
+/build/tmp/*
 /build/*
 /tmp/*
 /generated/*
@@ -7,3 +7,8 @@
 /Traffic-Analysis.jar
 /log.txt
 /Map.csv
+/Cars.csv
+/Pressure.csv
+/output/*
+/maps/*
+/runTest.bat

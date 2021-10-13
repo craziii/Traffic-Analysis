@@ -56,7 +56,7 @@ public class Intersection3WayMinor extends Intersection {
                 offset = i;
             }
         }
-        if (quantumGenerator.getNextBoolean()) { // First, next clockwise option
+        if (quantumGenerator.getNextBoolean(0)) { // First, next clockwise option
             switch (offset) {
                 case 0:
                     temp.out = directions[1];

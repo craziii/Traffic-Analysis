@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Date;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
+
+    public static String getMillis(String num){
+        switch(num.length()){
+            case 1: return "00"+num;
+            case 2: return "0"+num;
+            default: return num;
+        }
+    }
+
+    public static String getMillis(int num){
+        String numString = ""+num;
+        switch(numString.length()){
+            case 1: return "00"+numString;
+            case 2: return "0"+numString;
+            default: return numString;
+        }
+    }
 
     public static class Logging{
 
@@ -28,20 +44,22 @@ public class Util {
             if(Main.logToFile){
                 logToFile(message,level);
             }
-            String timeStamp = getTimestamp().split("\\.")[0];
-            switch (level) {
-                case CRITICAL:
-                    System.console().writer().println("[" + timeStamp + "]" + criticalLog + message);
-                    break;
-                case ERROR:
-                    System.console().writer().println("[" + timeStamp + "]" + errorLog + message);
-                    break;
-                case WARNING:
-                    System.console().writer().println("[" + timeStamp + "]" + warningLog + message);
-                    break;
-                case INFO:
-                    System.console().writer().println("[" + timeStamp + "]" + infoLog + message);
-                    break;
+            if(!Main.runInEditor) {
+                String timeStamp = getTimestamp().split("\\.")[0];
+                switch (level) {
+                    case CRITICAL:
+                        System.console().writer().println("[" + timeStamp + "]" + criticalLog + message);
+                        break;
+                    case ERROR:
+                        System.console().writer().println("[" + timeStamp + "]" + errorLog + message);
+                        break;
+                    case WARNING:
+                        System.console().writer().println("[" + timeStamp + "]" + warningLog + message);
+                        break;
+                    case INFO:
+                        System.console().writer().println("[" + timeStamp + "]" + infoLog + message);
+                        break;
+                }
             }
         }
 
@@ -49,16 +67,16 @@ public class Util {
             String timeStamp = getTimestamp().split("\\.")[0];
             switch (level) {
                 case CRITICAL:
-                    Util.FileManager.writeFile("log.txt","[" + timeStamp + "]" + criticalLog + message,false);
+                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + criticalLog + message,false);
                     break;
                 case ERROR:
-                    Util.FileManager.writeFile("log.txt","[" + timeStamp + "]" + errorLog + message,false);
+                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + errorLog + message,false);
                     break;
                 case WARNING:
-                    Util.FileManager.writeFile("log.txt","[" + timeStamp + "]" + warningLog + message,false);
+                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + warningLog + message,false);
                     break;
                 case INFO:
-                    Util.FileManager.writeFile("log.txt","[" + timeStamp + "]" + infoLog + message,false);
+                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + infoLog + message,false);
                     break;
             }
         }
@@ -178,6 +196,16 @@ public class Util {
 
         public static String DEFAULT_DELIMITER = ",";
 
+        public static boolean createFolder(String folder){
+            File file = new File(folder);
+            if(file.exists() && file.isDirectory()){
+                return true;
+            }
+            else{
+                return file.mkdir();
+            }
+        }
+
         public static boolean writeFile(String fileName, String[] lines, boolean overwrite) {
             try {
                 File file = new File(fileName);
@@ -216,14 +244,7 @@ public class Util {
             List<String> lines = new ArrayList<>();
             try{
                 File file = new File(filename);
-                FileReader fileReader = new FileReader(file);
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-                while(bufferedReader.ready()){
-                    lines.add(bufferedReader.readLine());
-                }
-                bufferedReader.close();
-                fileReader.close();
-                return lines.toArray(new String[0]);
+                return readLines(lines, file);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -234,19 +255,23 @@ public class Util {
         public static String[] readFile(File file){
             List<String> lines = new ArrayList<>();
             try{
-                FileReader fileReader = new FileReader(file);
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-                while(bufferedReader.ready()){
-                    lines.add(bufferedReader.readLine());
-                }
-                bufferedReader.close();
-                fileReader.close();
-                return lines.toArray(new String[0]);
+                return readLines(lines, file);
             }
             catch (Exception e){
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        private static String[] readLines(List<String> lines, File file) throws IOException {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while(bufferedReader.ready()){
+                lines.add(bufferedReader.readLine());
+            }
+            bufferedReader.close();
+            fileReader.close();
+            return lines.toArray(new String[0]);
         }
     }
 
@@ -255,7 +280,7 @@ public class Util {
         public static void getOptions(Argument[] options){
             printIntro();
             for(Argument option:options){
-                printOption(option.letter, option.name, option.information, option.values);
+                printOption(option);
             }
             System.console().flush();
         }

@@ -2,29 +2,30 @@ com/trafficAnalysis/Rotation.java
  com.trafficAnalysis.Rotation
  com.trafficAnalysis.Rotation$1
  com.trafficAnalysis.Rotation$Axes
-com/trafficAnalysis/GridManager.java
- com.trafficAnalysis.GridManager
 com/trafficAnalysis/QuantumGenerator.java
  com.trafficAnalysis.QuantumGenerator
 com/trafficAnalysis/Road.java
  com.trafficAnalysis.Road
-com/trafficAnalysis/Intersection4Way.java
- com.trafficAnalysis.Intersection4Way
- com.trafficAnalysis.Intersection4Way$1
-com/trafficAnalysis/UpdateManager.java
- com.trafficAnalysis.UpdateManager
- com.trafficAnalysis.UpdateManager$1
- com.trafficAnalysis.UpdateManager$Direction
- com.trafficAnalysis.UpdateManager$IntersectionMove
- com.trafficAnalysis.UpdateManager$NodeMove
- com.trafficAnalysis.UpdateManager$NodeMoveEnum
- com.trafficAnalysis.UpdateManager$UpdateErrors
+com/trafficAnalysis/Util.java
+ com.trafficAnalysis.Util
+ com.trafficAnalysis.Util$1
+ com.trafficAnalysis.Util$ArgumentHandler
+ com.trafficAnalysis.Util$ArgumentHandler$Argument
+ com.trafficAnalysis.Util$FileManager
+ com.trafficAnalysis.Util$Logging
+ com.trafficAnalysis.Util$Logging$LogLevel
+ com.trafficAnalysis.Util$WorldBuilderUtil
+ com.trafficAnalysis.Util$WorldBuilderUtil$DirNum
+com/trafficAnalysis/GridManager.java
+ com.trafficAnalysis.GridManager
+com/trafficAnalysis/Main.java
+ com.trafficAnalysis.Main
 com/trafficAnalysis/Intersection3WayMinor.java
  com.trafficAnalysis.Intersection3WayMinor
  com.trafficAnalysis.Intersection3WayMinor$1
-com/trafficAnalysis/Intersection2Way.java
- com.trafficAnalysis.Intersection2Way
- com.trafficAnalysis.Intersection2Way$1
+com/trafficAnalysis/GridBuilder.java
+ com.trafficAnalysis.GridBuilder
+ com.trafficAnalysis.GridBuilder$1
 com/trafficAnalysis/Node.java
  com.trafficAnalysis.Node
  com.trafficAnalysis.Node$1
@@ -37,18 +38,17 @@ com/trafficAnalysis/Intersection.java
 com/trafficAnalysis/Intersection3Way.java
  com.trafficAnalysis.Intersection3Way
  com.trafficAnalysis.Intersection3Way$1
-com/trafficAnalysis/Util.java
- com.trafficAnalysis.Util
- com.trafficAnalysis.Util$1
- com.trafficAnalysis.Util$ArgumentHandler
- com.trafficAnalysis.Util$ArgumentHandler$Argument
- com.trafficAnalysis.Util$FileManager
- com.trafficAnalysis.Util$Logging
- com.trafficAnalysis.Util$Logging$LogLevel
- com.trafficAnalysis.Util$WorldBuilderUtil
- com.trafficAnalysis.Util$WorldBuilderUtil$DirNum
-com/trafficAnalysis/Main.java
- com.trafficAnalysis.Main
-com/trafficAnalysis/GridBuilder.java
- com.trafficAnalysis.GridBuilder
- com.trafficAnalysis.GridBuilder$1
+com/trafficAnalysis/Intersection4Way.java
+ com.trafficAnalysis.Intersection4Way
+ com.trafficAnalysis.Intersection4Way$1
+com/trafficAnalysis/Intersection2Way.java
+ com.trafficAnalysis.Intersection2Way
+ com.trafficAnalysis.Intersection2Way$1
+com/trafficAnalysis/UpdateManager.java
+ com.trafficAnalysis.UpdateManager
+ com.trafficAnalysis.UpdateManager$1
+ com.trafficAnalysis.UpdateManager$Direction
+ com.trafficAnalysis.UpdateManager$IntersectionMove
+ com.trafficAnalysis.UpdateManager$NodeMove
+ com.trafficAnalysis.UpdateManager$NodeMoveEnum
+ com.trafficAnalysis.UpdateManager$UpdateErrors
