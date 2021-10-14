@@ -1,7 +1,7 @@
 package com.trafficAnalysis;
 
+import javax.lang.model.type.IntersectionType;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -20,6 +20,7 @@ public class Intersection {
     protected Queue<UpdateManager.Direction> carsInIntersection = new ArrayDeque<>();
 
     protected int stepCountdown = 0;
+    protected double[] previousRedLightPressure = {0,0,0,0};
 
     protected final IntersectionType intersectionType;
 
@@ -31,7 +32,7 @@ public class Intersection {
         this.inRoads = builder.inRoadsBuilder;
         this.outRoads = builder.outRoadsBuilder;
         quantumGenerator = qg;
-        updateGreenLights(true);
+        updateGreenLights(true,Main.pressureBasedAssessment);
     }
 
     public boolean isLightGreen(Road parentRoad) {
@@ -76,19 +77,42 @@ public class Intersection {
     }
 
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator){
-        return new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
+        UpdateManager.Direction tempInput = carsInIntersection.remove();
+        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
+        temp.in = UpdateManager.intToDirection(tempInput.ordinal());
+        return temp;
     }
 
-    void updateGreenLights(boolean firstTime){
+    void updateGreenLightsNormal(){
+
+    }
+
+    void updateGreenLightsPressure(){
+
+    }
+
+    void updateRedLightPressure(List<UpdateManager.Direction> lights){
+        for(int i = 0; i < greenLights.length; i++){
+            if(lights.contains(UpdateManager.intToDirection(i))){
+                previousRedLightPressure[i] = 0;
+            }
+            else{
+                if(inRoads[i] != null){
+                    previousRedLightPressure[i] += inRoads[i].getTotalPressure();
+                }
+            }
+        }
+    }
+
+    void updateGreenLights(boolean firstTime, boolean pressureSystem){
         if(stepCountdown > 0){
             stepCountdown--;
             return;
         }
-        if(firstTime){
-
-        }
-        else{
-
+        if(pressureSystem && firstTime){
+            for(double pressure:previousRedLightPressure){
+                pressure = 0;
+            }
         }
     }
     

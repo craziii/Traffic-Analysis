@@ -3,7 +3,6 @@
 /build/*
 /tmp/*
 /generated/*
-/.idea/workspace.xml
 /Traffic-Analysis.jar
 /log.txt
 /Map.csv

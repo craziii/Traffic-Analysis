@@ -15,6 +15,7 @@ public class Main {
     public static boolean outputMapToFile = false;
     public static long updateRate = 1;
     public static boolean verboseLogging = false;
+    public static boolean pressureBasedAssessment = false;
     public static boolean runInEditor = false;
     public static UUID globalUUID;
 
@@ -27,7 +28,8 @@ public class Main {
             new Argument("s","steps","Steps to be simulated by the program","Any whole number > 0"),
             new Argument("o", "output","output map to file in a rudimentary format once mapping has been completed", "TRUE/FALSE"),
             new Argument("u","update","number of steps per information update","Any whole number > 0"),
-            new Argument("v","verbose","enable verbose logging","TRUE/FALSE")
+            new Argument("v","verbose","enable verbose logging","TRUE/FALSE"),
+            new Argument("a","assessment","enable the new method of traffic light assessment utilising the traffic pressure system", "TRUE/FALSE")
     };
 
     public static void main(String[] args){
@@ -61,6 +63,7 @@ public class Main {
         updateRate = 1;
         runInEditor = true;
         verboseLogging = true;
+        pressureBasedAssessment = true;
     }
 
     static void searchArguments(String[] args){
@@ -73,6 +76,7 @@ public class Main {
         outputMapToFile = searchArgBoolean(options[6],args);
         updateRate = searchArgLong(options[7],args);
         verboseLogging = searchArgBoolean(options[8],args);
+        pressureBasedAssessment = searchArgBoolean(options[9],args);
         if(args.length == 0){
             helpRequested = true;
             logToFile = true;

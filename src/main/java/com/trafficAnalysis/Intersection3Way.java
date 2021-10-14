@@ -11,22 +11,7 @@ public class Intersection3Way extends Intersection{
 
     @Override
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator) {
-        UpdateManager.Direction tempInput = carsInIntersection.remove();
-        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
-        switch (tempInput) {
-            case north:
-                temp.in = UpdateManager.Direction.north;
-                break;
-            case east:
-                temp.in = UpdateManager.Direction.east;
-                break;
-            case south:
-                temp.in = UpdateManager.Direction.south;
-                break;
-            case west:
-                temp.in = UpdateManager.Direction.west;
-                break;
-        }
+        UpdateManager.IntersectionMove temp = super.getNextIntersectionOutput(quantumGenerator);
         List<UpdateManager.Direction> options = new ArrayList<>();
         for(int i = 0; i < inRoads.length; i++){
             if(inRoads[i] != null){
@@ -83,69 +68,111 @@ public class Intersection3Way extends Intersection{
             return temp;
         }
         else{
-            carsInIntersection.add(tempInput);
+            carsInIntersection.add(temp.in);
         }
         return null;
     }
 
     @Override
-    void updateGreenLights(boolean firstTime){
-        if(stepCountdown > 0){
-            stepCountdown--;
-            return;
-        }
+    void updateGreenLightsNormal() {
         List<UpdateManager.Direction> lights = new ArrayList<>();
+        //TODO: ADD CODE FOR DECIDING THE OUTPUT OF 3 WAY INTERSECTIONS
+        int currentOutput = -1;
+        for (int i = 0; i < greenLights.length; i++) {
+            if (greenLights[i]) {
+                currentOutput = i;
+            }
+        }
+        switch (currentOutput) {
+            case 0:
+                if (quantumGenerator.getNextBoolean(2)) {
+                    lights.add(outputDirections[1]);
+                } else {
+                    lights.add(outputDirections[2]);
+                }
+                break;
+            case 1:
+                if (quantumGenerator.getNextBoolean(2)) {
+                    lights.add(outputDirections[0]);
+                } else {
+                    lights.add(outputDirections[2]);
+                }
+                break;
+            case 2:
+                if (quantumGenerator.getNextBoolean(2)) {
+                    lights.add(outputDirections[0]);
+                } else {
+                    lights.add(outputDirections[1]);
+                }
+                break;
+        }
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+    }
+
+    @Override
+    void updateGreenLightsPressure(){
+        List<UpdateManager.Direction> lights = new ArrayList<>();
+        UpdateManager.Direction currentOutput = UpdateManager.Direction.none;
+        for (int i = 0; i < greenLights.length; i++) {
+            if (greenLights[i]) {
+                currentOutput = UpdateManager.intToDirection(i);
+            }
+        }
+        double[] pressures = {0,0,0};
+        UpdateManager.Direction[] possibleOutputs = {UpdateManager.Direction.none, UpdateManager.Direction.none, UpdateManager.Direction.none};
+        pressures[0] = inRoads[currentOutput.ordinal()].getTotalPressure();
+        possibleOutputs[0] = currentOutput;
+        List<UpdateManager.Direction> otherOutputDirections = new ArrayList<>();
+        for(UpdateManager.Direction dir:outputDirections){
+            if(dir != currentOutput){
+                otherOutputDirections.add(dir);
+            }
+        }
+        UpdateManager.Direction[] otherOutputDirectionsArray = otherOutputDirections.toArray(new UpdateManager.Direction[0]);
+        for(int i = 1; i < 3; i++){
+            pressures[i] = inRoads[otherOutputDirectionsArray[i-1].ordinal()].getTotalPressure() + previousRedLightPressure[otherOutputDirectionsArray[i-1].ordinal()];
+            possibleOutputs[i] = otherOutputDirectionsArray[i-1];
+        }
+        double maxPressure = -1;
+        UpdateManager.Direction output = UpdateManager.Direction.none;
+        for(int i = 0; i < 3; i++){
+            if(pressures[i] > maxPressure){
+                maxPressure = pressures[i];
+            }
+            output = possibleOutputs[i];
+        }
+        lights.add(output);
+        updateRedLightPressure(lights);
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+    }
+
+    @Override
+    void updateGreenLights(boolean firstTime, boolean pressureSystem) {
+        super.updateGreenLights(firstTime, pressureSystem);
         if (firstTime) {
+            List<UpdateManager.Direction> lights = new ArrayList<>();
             List<UpdateManager.Direction> outputDirs = new ArrayList<>();
-            for(int i = 0; i < inRoads.length; i++){
-                if(inRoads[i] != null){
+            for (int i = 0; i < inRoads.length; i++) {
+                if (inRoads[i] != null) {
                     outputDirs.add(UpdateManager.Direction.values()[i]);
                 }
             }
             outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
-            double temp = Math.random();
-            if(temp < 0.33){
+            if (quantumGenerator.getNextBoolean(3)) {
                 lights.add(outputDirections[0]);
-            }
-            else if(temp < 0.66){
+            } else if (quantumGenerator.getNextBoolean(2)) {
                 lights.add(outputDirections[1]);
-            }
-            else{
+            } else {
                 lights.add(outputDirections[2]);
             }
-        } else {
-            //TODO: ADD CODE FOR DECIDING THE OUTPUT OF 3 WAY INTERSECTIONS
-            int currentOutput = -1;
-            for(int i = 0; i < greenLights.length; i++){
-                if(greenLights[i]){
-                    currentOutput = i;
-                }
-            }
-            switch(currentOutput) {
-                case 0:
-                    if (quantumGenerator.getNextBoolean(0)) {
-                        lights.add(outputDirections[1]);
-                    } else {
-                        lights.add(outputDirections[2]);
-                    }
-                    break;
-                case 1:
-                    if (quantumGenerator.getNextBoolean(0)) {
-                        lights.add(outputDirections[0]);
-                    } else {
-                        lights.add(outputDirections[2]);
-                    }
-                    break;
-                case 2:
-                    if (quantumGenerator.getNextBoolean(0)) {
-                        lights.add(outputDirections[0]);
-                    } else {
-                        lights.add(outputDirections[1]);
-                    }
-                    break;
-            }
+            setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
         }
-        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+        if(pressureSystem){
+            updateGreenLightsPressure();
+        }
+        else{
+            updateGreenLightsNormal();
+        }
     }
 
 }

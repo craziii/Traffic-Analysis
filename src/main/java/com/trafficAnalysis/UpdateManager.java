@@ -217,7 +217,7 @@ public class UpdateManager {
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 7", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 7 - Update lights for next step
         for(Intersection intersection:intersectionMap.values()){
-            intersection.updateGreenLights(false);
+            intersection.updateGreenLights(false,Main.pressureBasedAssessment);
         }
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 8", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 8 - Check for Errors
