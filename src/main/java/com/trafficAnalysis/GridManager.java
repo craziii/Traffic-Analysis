@@ -58,8 +58,8 @@ public class GridManager {
         Util.Logging.log("World Map Complete, time taken to create [" + worldCreationDuration.toMinutesPart() + "m" + worldCreationDuration.toSecondsPart() + "." + worldCreationDuration.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
     }
 
-    public Intersection createIntersection(Road[] roadsArr){
-        Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).build();
+    public Intersection createIntersection(Road[] roadsArr, int[] location){
+        Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).mapLocation(location).build();
         updateManager.addIntersectionToMap(intersection.getUuid(),intersection);
         return intersection;
     }

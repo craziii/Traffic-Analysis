@@ -17,6 +17,7 @@ public class Main {
     public static boolean verboseLogging = false;
     public static boolean pressureBasedAssessment = false;
     public static boolean runInEditor = false;
+    public static int maxIntersectionSteps = 0;
     public static UUID globalUUID;
 
     static Argument[] options = {
@@ -29,14 +30,15 @@ public class Main {
             new Argument("o", "output","output map to file in a rudimentary format once mapping has been completed", "TRUE/FALSE"),
             new Argument("u","update","number of steps per information update","Any whole number > 0"),
             new Argument("v","verbose","enable verbose logging","TRUE/FALSE"),
-            new Argument("a","assessment","enable the new method of traffic light assessment utilising the traffic pressure system", "TRUE/FALSE")
+            new Argument("a","assessment","enable the new method of traffic light assessment utilising the traffic pressure system", "TRUE/FALSE"),
+            new Argument("x", "max","set the maximum number of cycles each intersection must wait before changing lights", "Any whole number > 0")
     };
 
     public static void main(String[] args){
         globalUUID = UUID.randomUUID();
         Util.FileManager.createFolder("output");
-        Util.FileManager.createFolder(globalUUID.toString());
-        Util.Logging.log("<NEW PROCESS STARTED>", Util.Logging.LogLevel.INFO);
+        Util.FileManager.createFolder("output/"+globalUUID.toString());
+        Util.Logging.log("<NEW PROCESS "+globalUUID+" STARTED>", Util.Logging.LogLevel.INFO);
         if(args.length == 0){
             forceArguments();
         }
@@ -77,6 +79,7 @@ public class Main {
         updateRate = searchArgLong(options[7],args);
         verboseLogging = searchArgBoolean(options[8],args);
         pressureBasedAssessment = searchArgBoolean(options[9],args);
+        maxIntersectionSteps = searchArgInt(options[10],args);
         if(args.length == 0){
             helpRequested = true;
             logToFile = true;

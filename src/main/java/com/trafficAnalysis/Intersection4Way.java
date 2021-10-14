@@ -59,10 +59,8 @@ public class Intersection4Way extends Intersection{
             }
         }
         if(validIntersectionOutput(temp.out)){
+            carsInIntersection.remove();
             return temp;
-        }
-        else{
-            carsInIntersection.add(temp.in);
         }
         return null;
     }

@@ -64,10 +64,9 @@ public class Intersection3WayMinor extends Intersection {
                 temp.out = minorRoad;
             }
         }
-        if (validIntersectionOutput(temp.out)) {
+        if(validIntersectionOutput(temp.out)){
+            carsInIntersection.remove();
             return temp;
-        } else {
-            carsInIntersection.add(temp.in);
         }
         return null;
     }

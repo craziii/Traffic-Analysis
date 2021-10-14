@@ -209,6 +209,9 @@ public class Util {
         public static boolean writeFile(String fileName, String[] lines, boolean overwrite) {
             try {
                 File file = new File(fileName);
+                if(!file.exists()){
+                    file.createNewFile();
+                }
                 FileWriter fileWriter = new FileWriter(file, !overwrite);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 for(String line:lines){
@@ -227,6 +230,9 @@ public class Util {
         public static boolean writeFile(String fileName, String line, boolean overwrite){
             try {
                 File file = new File(fileName);
+                if(!file.exists()){
+                    file.createNewFile();
+                }
                 FileWriter fileWriter = new FileWriter(file, !overwrite);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 bufferedWriter.write(line);
@@ -316,6 +322,26 @@ public class Util {
 
         public static double searchArgDouble(Argument argument, String[] args){
             return searchArgDouble(argument.letter,argument.name,args);
+        }
+
+        public static int searchArgInt(String letter, String name, String[] args){
+            for(String arg:args){
+                String[] parts = arg.split("=");
+                if(parts.length == 1){
+                    break;
+                }
+                if(parts[0].equals("-"+letter) || parts[0].equals("--"+name)){
+                    if(parts[1].startsWith("\"")){
+                        parts[1] = parts[1].substring(1, parts[1].length()-1);
+                    }
+                    return Integer.parseInt(parts[1]);
+                }
+            }
+            return 0;
+        }
+
+        public static int searchArgInt(Argument argument, String[] args){
+            return searchArgInt(argument.letter,argument.name,args);
         }
 
         public static String searchArgString(String letter, String name, String[] args){

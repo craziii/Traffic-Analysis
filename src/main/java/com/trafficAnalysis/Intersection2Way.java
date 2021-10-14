@@ -27,10 +27,8 @@ public class Intersection2Way extends Intersection{
                 break;
         }
         if(validIntersectionOutput(temp.out)){
+            carsInIntersection.remove();
             return temp;
-        }
-        else{
-            carsInIntersection.add(temp.in);
         }
         return null;
     }

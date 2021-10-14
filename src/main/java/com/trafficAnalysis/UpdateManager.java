@@ -162,10 +162,10 @@ public class UpdateManager {
                     count = 2;
                     break;
                 case threeWay:
-                    count = 3;
+                    count = 2;
                     break;
                 case fourWay:
-                    count = 4;
+                    count = 2;
                     break;
             }
             for (int i = 0; i < count; i++) {
@@ -226,10 +226,9 @@ public class UpdateManager {
         }
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 9", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 9 - Write information to file
-        //if(Main.verboseLogging) {
-            writePressure();
-            writeCars();
-        //}
+        writePressure();
+        writeCars();
+        writeIntersections();
         //TODO:STEP 10 - Calculate Metrics
         Instant cycleEnd = Instant.now();
         cycleTime = Duration.between(cycleStart,cycleEnd);
@@ -284,6 +283,34 @@ public class UpdateManager {
         }
         lines.add("Max Pressure from Roads is from Road:["+maxPressureUUID+"] with a pressure of:["+maxPressure+"]");
         Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv",lines.toArray(new String[0]),false);
+    }
+
+    void writeIntersections(){
+        for(Intersection intersection:intersectionMap.values()){
+            if(cycleCounter == 1){
+                Util.FileManager.writeFile("output/"+Main.globalUUID+"/Intersection-["+intersection.mapLocation[0]+","+intersection.mapLocation[1]+"]"+intersection.getUuid()+".csv","cycleNumber,lightCountdown,northPressure,eastPressure,southPressure,westPressure,northLight,eastLight,southLight,westLight",true);
+            }
+            List<String> parts = new ArrayList<>();
+            parts.add(""+cycleCounter);
+            parts.add(""+intersection.stepCountdown);
+            for(int i = 0; i < 4; i++){
+                parts.add(""+intersection.getPressure(intToDirection(i)));
+            }
+            for(int i = 0; i < 4; i++){
+                if(intersection.greenLights[i]){
+                    parts.add(""+1);
+                }
+                else{
+                    parts.add(""+0);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for(String part:parts){
+                sb.append(part).append(Util.FileManager.DEFAULT_DELIMITER);
+            }
+            sb.deleteCharAt(sb.length()-1);
+            Util.FileManager.writeFile("output/"+Main.globalUUID+"/Intersection-["+intersection.mapLocation[0]+","+intersection.mapLocation[1]+"]"+intersection.getUuid()+".csv",sb.toString(),false);
+        }
     }
 
     void printCycleErrors(){

@@ -104,7 +104,7 @@ public class GridBuilder {
                         roads[count+4] = null;
                     }
                 }
-                Intersection intersection = gridManager.createIntersection(roads);
+                Intersection intersection = gridManager.createIntersection(roads,new int[]{i,j});
                 ImmutablePair<Integer,Integer> tempWorldPair = new ImmutablePair<>(worldLocation[0],worldLocation[1]);
                 UUID[] tempUUID = new UUID[]{intersection.getUuid()};
                 worldMap.put(tempWorldPair,tempUUID);
@@ -176,20 +176,20 @@ public class GridBuilder {
         Integer[] newLocation = new Integer[2];
         switch(direction) {
             case north:
-                newLocation[0] = location[0];
-                newLocation[1] = location[1] - 1;
-                break;
-            case east:
-                newLocation[0] = location[0] + 1;
+                newLocation[0] = location[0] - 1;
                 newLocation[1] = location[1];
                 break;
-            case south:
+            case east:
                 newLocation[0] = location[0];
                 newLocation[1] = location[1] + 1;
                 break;
-            case west:
-                newLocation[0] = location[0] - 1;
+            case south:
+                newLocation[0] = location[0] + 1;
                 newLocation[1] = location[1];
+                break;
+            case west:
+                newLocation[0] = location[0];
+                newLocation[1] = location[1] - 1;
                 break;
         }
         return newLocation;
