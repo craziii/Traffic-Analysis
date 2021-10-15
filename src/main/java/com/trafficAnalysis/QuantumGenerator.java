@@ -7,14 +7,15 @@ import org.redfx.strange.local.SimpleQuantumExecutionEnvironment;
 
 public class QuantumGenerator {
 
-    public static double DEFAULT_INTERSECTION_CHANCE = 0.5;
-    public static double DEFAULT_CAR_CHANCE = 0.2;
+    public static double DEFAULT_HALF_CHANCE = 0.5;
+    public static double DEFAULT_THIRD_CHANCE = 1/3d;
+    public static double DEFAULT_FIFTH_CHANCE = 0.2;
 
     SimpleQuantumExecutionEnvironment sqee;
     Program[] programs;
 
     public QuantumGenerator(){
-        setup(chanceToAngle(DEFAULT_INTERSECTION_CHANCE),chanceToAngle(DEFAULT_CAR_CHANCE));
+        setup(chanceToAngle(DEFAULT_HALF_CHANCE),chanceToAngle(DEFAULT_FIFTH_CHANCE));
     }
 
     public QuantumGenerator(double intersectionChance, double carChance){
@@ -27,17 +28,23 @@ public class QuantumGenerator {
 
     void setup(double angleIntersection, double angleCar){
         sqee = new SimpleQuantumExecutionEnvironment();
-        programs = new Program[2];
-        createQuantumBooleanCircuits(angleIntersection,angleCar);
+        programs = new Program[4];
+        createQuantumBooleanCircuits(angleIntersection,angleCar,chanceToAngle(DEFAULT_HALF_CHANCE),chanceToAngle(DEFAULT_THIRD_CHANCE));
     }
 
-    private void createQuantumBooleanCircuits(double angleIntersection, double angleCar) {
+    private void createQuantumBooleanCircuits(double angleIntersection, double angleCar, double intersectionHalfRandom, double intersectionThirdRandom) {
         programs[0] = new Program(1);
         Step step = new Step(new Rotation(angleIntersection, Rotation.Axes.XAxis,0));
         programs[0].addStep(step);
         programs[1] = new Program(1);
         step = new Step(new Rotation(angleCar, Rotation.Axes.XAxis,0));
         programs[1].addStep(step);
+        programs[2] = new Program(1);
+        step = new Step(new Rotation(intersectionHalfRandom, Rotation.Axes.XAxis,0));
+        programs[2].addStep(step);
+        programs[3] = new Program(1);
+        step = new Step(new Rotation(intersectionThirdRandom, Rotation.Axes.XAxis,0));
+        programs[3].addStep(step);
     }
 
 

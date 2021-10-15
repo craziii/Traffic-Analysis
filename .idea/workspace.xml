@@ -23,8 +23,13 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/map-afd97887-1f65-4218-80e1-c1fd21b8552d.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection2Way.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection2Way.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3Way.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3Way.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3WayMinor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3WayMinor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection4Way.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection4Way.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Util.java" afterDir="false" />
@@ -144,6 +149,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -189,15 +195,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -318,7 +322,8 @@
       <workItem from="1633966553722" duration="14679000" />
       <workItem from="1633983157956" duration="4482000" />
       <workItem from="1634052707463" duration="1255000" />
-      <workItem from="1634054289775" duration="9990000" />
+      <workItem from="1634054289775" duration="10640000" />
+      <workItem from="1634227139582" duration="21088000" />
     </task>
     <task id="LOCAL-00001" summary="Update Service Rewrite, Step 1">
       <created>1633465479291</created>
@@ -357,27 +362,6 @@
     <MESSAGE value="Update Service Rewrite, Step 1" />
     <MESSAGE value="Update Service Rewrite, Step 4-5" />
     <option name="LAST_COMMIT_MESSAGE" value="Update Service Rewrite, Step 4-5" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection4Way.java</url>
-          <line>13</line>
-          <option name="timeStamp" value="48" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java</url>
-          <line>78</line>
-          <option name="timeStamp" value="49" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection4Way.java</url>
-          <line>14</line>
-          <option name="timeStamp" value="50" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,7 +1,7 @@
 package com.trafficAnalysis;
 
+import javax.lang.model.type.IntersectionType;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -12,6 +12,8 @@ public class Intersection {
     protected final Road[] inRoads;
     protected final Road[] outRoads;
 
+    protected int[] mapLocation;
+
     protected UpdateManager.Direction[] outputDirections;
 
     protected boolean[] greenLights = {false,false,false,false};
@@ -20,6 +22,7 @@ public class Intersection {
     protected Queue<UpdateManager.Direction> carsInIntersection = new ArrayDeque<>();
 
     protected int stepCountdown = 0;
+    protected double[] previousRedLightPressure = {0,0,0,0};
 
     protected final IntersectionType intersectionType;
 
@@ -30,8 +33,9 @@ public class Intersection {
         this.intersectionType = builder.intersectionTypeBuilder;
         this.inRoads = builder.inRoadsBuilder;
         this.outRoads = builder.outRoadsBuilder;
+        this.mapLocation = builder.mapLocationBuilder;
         quantumGenerator = qg;
-        updateGreenLights(true);
+        updateGreenLights(true,Main.pressureBasedAssessment);
     }
 
     public boolean isLightGreen(Road parentRoad) {
@@ -59,42 +63,65 @@ public class Intersection {
                 dir = i;
             }
         }
-        switch(dir) {
-            case 0:
-                carsInIntersection.add(UpdateManager.Direction.north);
-                break;
-            case 1:
-                carsInIntersection.add(UpdateManager.Direction.east);
-                break;
-            case 2:
-                carsInIntersection.add(UpdateManager.Direction.south);
-                break;
-            case 3:
-                carsInIntersection.add(UpdateManager.Direction.west);
-                break;
-        }
+        carsInIntersection.add(UpdateManager.intToDirection(dir));
     }
 
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator){
-        return new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
+        UpdateManager.Direction tempInput = carsInIntersection.peek();
+        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
+        assert tempInput != null;
+        temp.in = UpdateManager.intToDirection(tempInput.ordinal());
+        return temp;
     }
 
-    void updateGreenLights(boolean firstTime){
+    void updateGreenLightsNormal(){
+
+    }
+
+    void updateGreenLightsPressure(){
+
+    }
+
+    void updateRedLightPressure(List<UpdateManager.Direction> lights){
+        for(int i = 0; i < greenLights.length; i++){
+            if(lights.contains(UpdateManager.intToDirection(i))){
+                previousRedLightPressure[i] = 0;
+            }
+            else{
+                if(inRoads[i] != null){
+                    previousRedLightPressure[i] += inRoads[i].getTotalPressure();
+                }
+            }
+        }
+    }
+
+    void setStepCountdown(int steps){
+        stepCountdown = steps;
+    }
+
+    void updateGreenLights(boolean firstTime, boolean pressureSystem){
         if(stepCountdown > 0){
             stepCountdown--;
             return;
         }
-        if(firstTime){
-
+        else if(stepCountdown == 0){
+            if(firstTime){
+                setStepCountdown((int) Math.floor(Math.random()*Main.maxIntersectionSteps));
+            }
+            else {
+                setStepCountdown(Main.maxIntersectionSteps);
+            }
         }
-        else{
-
+        if(pressureSystem && firstTime){
+            for(double pressure:previousRedLightPressure){
+                pressure = 0;
+            }
         }
     }
     
     void setGreenLights(UpdateManager.Direction[] direction){
-        for(boolean b:greenLights){
-            b = false;
+        for(int i = 0; i < 4; i++){
+            greenLights[i] = false;
         }
         for(UpdateManager.Direction dir:direction){
             greenLights[dir.ordinal()] = true;
@@ -115,6 +142,13 @@ public class Intersection {
             return true;
         }
         return false;
+    }
+
+    double getPressure(UpdateManager.Direction dir){
+        if(inRoads[dir.ordinal()] != null){
+            return inRoads[dir.ordinal()].getTotalPressure();
+        }
+        return -1;
     }
 
     Road[] getRoads(boolean in){
@@ -145,6 +179,8 @@ public class Intersection {
         private Road[] inRoadsBuilder;
         private Road[] outRoadsBuilder;
 
+        private int[] mapLocationBuilder;
+
         private QuantumGenerator quantumGeneratorBuilder;
         
         private IntersectionType intersectionTypeBuilder;
@@ -167,6 +203,11 @@ public class Intersection {
 
         public IntersectionBuilder intersectionType(IntersectionType intersectionType){
             this.intersectionTypeBuilder = intersectionType;
+            return this;
+        }
+
+        public IntersectionBuilder mapLocation(int[] mapLocation){
+            this.mapLocationBuilder = mapLocation;
             return this;
         }
 

@@ -23,11 +23,18 @@ public class UpdateManager {
 
     long cycleCounter;
     long cyclesToCount;
+    long carSpawnErrors;
 
     Duration cycleTime;
     Duration totalTime;
 
     QuantumGenerator quantumGenerator;
+
+    double systemMaxPressure;
+    long systemCycleMaxPressure;
+    List<String> systemNodeLines;
+    UUID systemRoadMaxPressure;
+    UUID systemIntersectionMaxPressure;
 
     List<NodeMove> nodeMoveList;
     List<IntersectionMove> intersectionMoveList;
@@ -41,8 +48,10 @@ public class UpdateManager {
         updateErrorsMap = new HashMap<>();
         entryRoadMap = new HashMap<>();
         exitRoadMap = new HashMap<>();
+        systemNodeLines = new ArrayList<>();
         cycleCounter = 0;
         cyclesToCount = 0;
+        carSpawnErrors = 0;
         quantumGenerator = qg;
         totalTime = Duration.ZERO;
     }
@@ -162,10 +171,10 @@ public class UpdateManager {
                     count = 2;
                     break;
                 case threeWay:
-                    count = 3;
+                    count = 2;
                     break;
                 case fourWay:
-                    count = 4;
+                    count = 2;
                     break;
             }
             for (int i = 0; i < count; i++) {
@@ -210,26 +219,30 @@ public class UpdateManager {
         for (Road road : entryRoadMap.values()) {
             if (quantumGenerator.getNextBoolean(1)) {
                 if (!road.getFirstNode().addCar()) {
-                    updateErrorsMap.put(road.getUuid(), UpdateErrors.carSpawnError);
+                    carSpawnErrors++;
                 }
             }
         }
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 7", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 7 - Update lights for next step
         for(Intersection intersection:intersectionMap.values()){
-            intersection.updateGreenLights(false);
+            intersection.updateGreenLights(false,Main.pressureBasedAssessment);
         }
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 8", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 8 - Check for Errors
         if(!updateErrorsMap.isEmpty()){
             printCycleErrors();
         }
+        if(cycleCounter % 100 == 0){
+            Util.Logging.log("Car Spawn Errors in the past 100 cycles ["+carSpawnErrors+"]", Util.Logging.LogLevel.ERROR);
+            carSpawnErrors = 0;
+        }
         if(Main.verboseLogging){Util.Logging.log("update cycle, step 9", Util.Logging.LogLevel.INFO);}
         //TODO:STEP 9 - Write information to file
-        //if(Main.verboseLogging) {
-            writePressure();
-            writeCars();
-        //}
+        //writePressure();
+        //writeCars();
+        writeIntersections();
+        checkPressure();
         //TODO:STEP 10 - Calculate Metrics
         Instant cycleEnd = Instant.now();
         cycleTime = Duration.between(cycleStart,cycleEnd);
@@ -241,9 +254,9 @@ public class UpdateManager {
 
     void writeCars(){
         if(cycleCounter == 1){
-            Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv","",true);
+            Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Cars.csv","",true);
         }
-        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv","CYCLE COUNT:"+cycleCounter,false);
+        Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Cars.csv","CYCLE COUNT:"+cycleCounter,false);
         List<String> lines = new ArrayList<>();
         for(Road road:roadMap.values()){
             StringBuilder sb = new StringBuilder();
@@ -259,14 +272,14 @@ public class UpdateManager {
             sb.append("]");
             lines.add(sb.toString());
         }
-        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Cars.csv",lines.toArray(new String[0]),false);
+        Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Cars.csv",lines.toArray(new String[0]),false);
     }
 
     void writePressure(){
         if(cycleCounter == 1){
-            Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv","",true);
+            Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Pressure.csv","",true);
         }
-        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv","CYCLE COUNT:"+cycleCounter,false);
+        Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Pressure.csv","CYCLE COUNT:"+cycleCounter,false);
         double maxPressure = -1;
         String maxPressureUUID = "";
         double totalPressure = 0;
@@ -283,7 +296,73 @@ public class UpdateManager {
             }
         }
         lines.add("Max Pressure from Roads is from Road:["+maxPressureUUID+"] with a pressure of:["+maxPressure+"]");
-        Util.FileManager.writeFile("output/"+Main.globalUUID+"/Pressure.csv",lines.toArray(new String[0]),false);
+        Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/Pressure.csv", lines.toArray(new String[0]), false);
+    }
+
+    void writeIntersections(){
+        for(Intersection intersection:intersectionMap.values()) {
+            if (cycleCounter == 1) {
+                Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/Intersection-[" + intersection.mapLocation[0] + "," + intersection.mapLocation[1] + "]" + intersection.getUuid() + ".csv", "cycleNumber,lightCountdown,northPressure,eastPressure,southPressure,westPressure,northLight,eastLight,southLight,westLight", true);
+            }
+            List<String> parts = new ArrayList<>();
+            parts.add("" + cycleCounter);
+            parts.add("" + intersection.stepCountdown);
+            for (int i = 0; i < 4; i++) {
+                parts.add("" + intersection.getPressure(intToDirection(i)));
+            }
+            for (int i = 0; i < 4; i++) {
+                if (intersection.greenLights[i]) {
+                    parts.add("" + 1);
+                } else {
+                    parts.add("" + 0);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String part : parts) {
+                sb.append(part).append(Util.FileManager.DEFAULT_DELIMITER);
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/Intersection-[" + intersection.mapLocation[0] + "," + intersection.mapLocation[1] + "]" + intersection.getUuid() + ".csv", sb.toString(), false);
+        }
+    }
+
+    void checkPressure(){
+        for(Road r:roadMap.values()){
+            if(r.getTotalPressure() > systemMaxPressure){
+                systemMaxPressure = r.getTotalPressure();
+                systemCycleMaxPressure = cycleCounter;
+                systemRoadMaxPressure = r.getUuid();
+                systemIntersectionMaxPressure = r.getOutIntersection().getUuid();
+                List<String> lines = new ArrayList<>();
+                for(Node node: r.nodesInRoad){
+                    lines.add(r.nodesInRoad.indexOf(node)+","+node.getPressure());
+                }
+                systemNodeLines = lines;
+            }
+            if(r.getTotalPressure() > 100) {
+                Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "Success,cycleCount,maxPressure,road,intersection", true);
+                Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "0," + cycleCounter + "," + r.getTotalPressure() + "," + r.getUuid() + "," + r.outIntersection.getUuid(), false);
+                Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/fail.log", "Node,NodePressure", true);
+                Util.Logging.log("Road [" + r.getUuid() + "] connected to Intersection [" + r.outIntersection.getUuid() + "] has reached over 100 total pressure, pressure [" + r.getTotalPressure() + "], this occured on cycle [" + cycleCounter + "]", Util.Logging.LogLevel.ERROR);
+                List<String> lines = new ArrayList<>();
+                for (Node node : r.nodesInRoad) {
+                    lines.add(r.nodesInRoad.indexOf(node) + "," + node.getPressure());
+                }
+                Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/fail.log", lines.toArray(new String[0]), false);
+                System.exit(0);
+            }
+        }
+    }
+
+    void printFinalInformation() {
+        Util.Logging.log("Maximum Pressure Reached During Test [" + systemMaxPressure + "]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Maximum Pressure Reached During Cycle [" + systemCycleMaxPressure + "]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Maximum Pressure Reached On Road [" + systemRoadMaxPressure + "]", Util.Logging.LogLevel.INFO);
+        Util.Logging.log("Maximum Pressure Reached On Intersection [" + systemIntersectionMaxPressure + "]", Util.Logging.LogLevel.INFO);
+        Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "Success,cycleCount,maxPressure,road,intersection", true);
+        Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "1," + systemCycleMaxPressure + "," + systemMaxPressure + "," + systemRoadMaxPressure + "," + systemIntersectionMaxPressure, false);
+        Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/success.log", "Node,NodePressure", true);
+        Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/success.log", systemNodeLines.toArray(new String[0]), false);
     }
 
     void printCycleErrors(){

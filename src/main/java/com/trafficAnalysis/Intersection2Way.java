@@ -11,22 +11,7 @@ public class Intersection2Way extends Intersection{
 
     @Override
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator) {
-        UpdateManager.Direction tempInput = carsInIntersection.remove();
-        UpdateManager.IntersectionMove temp = new UpdateManager.IntersectionMove(this, UpdateManager.Direction.none, UpdateManager.Direction.none);
-        switch (tempInput) {
-            case north:
-                temp.in = UpdateManager.Direction.north;
-                break;
-            case east:
-                temp.in = UpdateManager.Direction.east;
-                break;
-            case south:
-                temp.in = UpdateManager.Direction.south;
-                break;
-            case west:
-                temp.in = UpdateManager.Direction.west;
-                break;
-        }
+        UpdateManager.IntersectionMove temp = super.getNextIntersectionOutput(quantumGenerator);
         switch(temp.in) {
             case north:
                 temp.out = UpdateManager.Direction.south;
@@ -42,22 +27,59 @@ public class Intersection2Way extends Intersection{
                 break;
         }
         if(validIntersectionOutput(temp.out)){
+            carsInIntersection.remove();
             return temp;
-        }
-        else{
-            carsInIntersection.add(tempInput);
         }
         return null;
     }
 
     @Override
-    void updateGreenLights(boolean firstTime){
+    void updateGreenLightsNormal() {
+        List<UpdateManager.Direction> lights = new ArrayList<>();
+        if (greenLights[outputDirections[0].ordinal()]) {
+            lights.add(outputDirections[1]);
+        } else {
+            lights.add(outputDirections[0]);
+        }
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+    }
+
+    @Override
+    void updateGreenLightsPressure() {
+        List<UpdateManager.Direction> lights = new ArrayList<>();
+        double redPressure = 0;
+        double greenPressure = 0;
+        if (greenLights[outputDirections[0].ordinal()]) {
+            redPressure = inRoads[outputDirections[1].ordinal()].getTotalPressure();
+            greenPressure = inRoads[outputDirections[0].ordinal()].getTotalPressure();
+            redPressure += previousRedLightPressure[outputDirections[1].ordinal()];
+            if (greenPressure < redPressure) {
+                lights.add(outputDirections[1]);
+            } else {
+                lights.add(outputDirections[0]);
+            }
+        } else {
+            redPressure = inRoads[outputDirections[0].ordinal()].getTotalPressure();
+            greenPressure = inRoads[outputDirections[1].ordinal()].getTotalPressure();
+            redPressure += previousRedLightPressure[outputDirections[0].ordinal()];
+            if (greenPressure < redPressure) {
+                lights.add(outputDirections[0]);
+            } else {
+                lights.add(outputDirections[1]);
+            }
+        }
+        updateRedLightPressure(lights);
+        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+    }
+
+    @Override
+    void updateGreenLights(boolean firstTime, boolean pressureSystem){
+        super.updateGreenLights(firstTime,pressureSystem);
         if(stepCountdown > 0){
-            stepCountdown--;
             return;
         }
-        List<UpdateManager.Direction> lights = new ArrayList<>();
         if(firstTime){
+            List<UpdateManager.Direction> lights = new ArrayList<>();
             List<UpdateManager.Direction> outputDirs = new ArrayList<>();
             for(int i = 0; i < inRoads.length; i++){
                 if(inRoads[i] != null){
@@ -65,21 +87,19 @@ public class Intersection2Way extends Intersection{
                 }
             }
             outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
-            if(quantumGenerator.getNextBoolean(0)){
+            if(quantumGenerator.getNextBoolean(2)){
                 lights.add(outputDirections[0]);
             }
             else{
                 lights.add(outputDirections[1]);
             }
+            setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
+        }
+        if(pressureSystem){
+            updateGreenLightsPressure();
         }
         else{
-            if(greenLights[outputDirections[0].ordinal()]){
-                lights.add(outputDirections[1]);
-            }
-            else{
-                lights.add(outputDirections[0]);
-            }
+            updateGreenLightsNormal();
         }
-        setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
     }
 }

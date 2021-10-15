@@ -9,11 +9,11 @@ import java.util.UUID;
 public class GridManager {
 
     public static final float WAITING_THRESHOLD_PRESSURE = 5f;
-    public static final float FULL_SPEED_PRESSURE_RATE = -2f;
-    public static final float SLOW_SPEED_PRESSURE_RATE = -1f;
+    public static final float FULL_SPEED_PRESSURE_RATE = -0.8f;
+    public static final float SLOW_SPEED_PRESSURE_RATE = -0.4f;
     public static final float WAITING_PRESSURE_RATE = 1f;
     public static final float ANNOYED_PRESSURE_RATE = 2f;
-    public static final float NO_CAR_PRESSURE_RATE = -3f;
+    public static final float NO_CAR_PRESSURE_RATE = -1f;
     public static final float LOWEST_PRESSURE = 0.01f;
 
     GridBuilder gridBuilder;
@@ -58,8 +58,8 @@ public class GridManager {
         Util.Logging.log("World Map Complete, time taken to create [" + worldCreationDuration.toMinutesPart() + "m" + worldCreationDuration.toSecondsPart() + "." + worldCreationDuration.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
     }
 
-    public Intersection createIntersection(Road[] roadsArr){
-        Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).build();
+    public Intersection createIntersection(Road[] roadsArr, int[] location){
+        Intersection intersection = new Intersection.IntersectionBuilder(quantumGenerator).in(roadsArr[0],roadsArr[1],roadsArr[2],roadsArr[3]).out(roadsArr[4],roadsArr[5],roadsArr[6],roadsArr[7]).mapLocation(location).build();
         updateManager.addIntersectionToMap(intersection.getUuid(),intersection);
         return intersection;
     }
@@ -92,5 +92,6 @@ public class GridManager {
 
     void simulateSteps(long steps){
         updateManager.runSteps(steps);
+        updateManager.printFinalInformation();
     }
 }

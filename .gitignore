@@ -3,7 +3,6 @@
 /build/*
 /tmp/*
 /generated/*
-/.idea/workspace.xml
 /Traffic-Analysis.jar
 /log.txt
 /Map.csv
@@ -12,3 +11,4 @@
 /output/*
 /maps/*
 /runTest.bat
+/runTest2.bat

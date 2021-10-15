@@ -67,16 +67,16 @@ public class Util {
             String timeStamp = getTimestamp().split("\\.")[0];
             switch (level) {
                 case CRITICAL:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + criticalLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + criticalLog + message,false);
                     break;
                 case ERROR:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + errorLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + errorLog + message,false);
                     break;
                 case WARNING:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + warningLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + warningLog + message,false);
                     break;
                 case INFO:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + infoLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + infoLog + message,false);
                     break;
             }
         }
@@ -195,6 +195,7 @@ public class Util {
     public static class FileManager{
 
         public static String DEFAULT_DELIMITER = ",";
+        public static String FOLDER_NAME = "";
 
         public static boolean createFolder(String folder){
             File file = new File(folder);
@@ -206,9 +207,21 @@ public class Util {
             }
         }
 
+        public static void setFolderName(){
+            if(Main.folderName.equals("")){
+                FOLDER_NAME = Main.globalUUID.toString();
+            }
+            else{
+                FOLDER_NAME = Main.folderName;
+            }
+        }
+
         public static boolean writeFile(String fileName, String[] lines, boolean overwrite) {
             try {
                 File file = new File(fileName);
+                if(!file.exists()){
+                    file.createNewFile();
+                }
                 FileWriter fileWriter = new FileWriter(file, !overwrite);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 for(String line:lines){
@@ -227,6 +240,9 @@ public class Util {
         public static boolean writeFile(String fileName, String line, boolean overwrite){
             try {
                 File file = new File(fileName);
+                if(!file.exists()){
+                    file.createNewFile();
+                }
                 FileWriter fileWriter = new FileWriter(file, !overwrite);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                 bufferedWriter.write(line);
@@ -316,6 +332,26 @@ public class Util {
 
         public static double searchArgDouble(Argument argument, String[] args){
             return searchArgDouble(argument.letter,argument.name,args);
+        }
+
+        public static int searchArgInt(String letter, String name, String[] args){
+            for(String arg:args){
+                String[] parts = arg.split("=");
+                if(parts.length == 1){
+                    break;
+                }
+                if(parts[0].equals("-"+letter) || parts[0].equals("--"+name)){
+                    if(parts[1].startsWith("\"")){
+                        parts[1] = parts[1].substring(1, parts[1].length()-1);
+                    }
+                    return Integer.parseInt(parts[1]);
+                }
+            }
+            return 0;
+        }
+
+        public static int searchArgInt(Argument argument, String[] args){
+            return searchArgInt(argument.letter,argument.name,args);
         }
 
         public static String searchArgString(String letter, String name, String[] args){
