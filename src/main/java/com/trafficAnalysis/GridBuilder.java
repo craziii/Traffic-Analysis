@@ -158,8 +158,8 @@ public class GridBuilder {
             lines.add(sb.toString());
         }
         UUID uuid = UUID.randomUUID();
-        Util.FileManager.writeFile("output/"+Main.globalUUID+"/map.csv",lines.toArray(new String[0]),false);
-        Util.Logging.log("Writing mapfile to [output/"+Main.globalUUID+"/map.csv]", Util.Logging.LogLevel.INFO);
+        Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/map.csv",lines.toArray(new String[0]),false);
+        Util.Logging.log("Writing mapfile to [output/"+Util.FileManager.FOLDER_NAME+"/map.csv]", Util.Logging.LogLevel.INFO);
     }
 
     Road[] createRoadPair(Integer[] location, int nodes){

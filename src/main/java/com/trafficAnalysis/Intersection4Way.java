@@ -113,6 +113,9 @@ public class Intersection4Way extends Intersection{
     @Override
     void updateGreenLights(boolean firstTime, boolean pressureSystem){
         super.updateGreenLights(firstTime, pressureSystem);
+        if(stepCountdown > 0){
+            return;
+        }
         if (firstTime) {
             List<UpdateManager.Direction> lights = new ArrayList<>();
             if(quantumGenerator.getNextBoolean(2)){

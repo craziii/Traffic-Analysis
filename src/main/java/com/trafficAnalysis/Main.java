@@ -19,6 +19,7 @@ public class Main {
     public static boolean runInEditor = false;
     public static int maxIntersectionSteps = 0;
     public static UUID globalUUID;
+    public static String folderName = "";
 
     static Argument[] options = {
             new Argument("i","intersection","the chance between 0 and 1 for intersections to use","0 - 1 inclusive"),
@@ -31,26 +32,26 @@ public class Main {
             new Argument("u","update","number of steps per information update","Any whole number > 0"),
             new Argument("v","verbose","enable verbose logging","TRUE/FALSE"),
             new Argument("a","assessment","enable the new method of traffic light assessment utilising the traffic pressure system", "TRUE/FALSE"),
-            new Argument("x", "max","set the maximum number of cycles each intersection must wait before changing lights", "Any whole number > 0")
+            new Argument("x", "max","set the maximum number of cycles each intersection must wait before changing lights", "Any whole number > 0"),
+            new Argument("f","filename","set the output folder name for all system outputs","foldername")
     };
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         globalUUID = UUID.randomUUID();
         Util.FileManager.createFolder("output");
-        Util.FileManager.createFolder("output/"+globalUUID.toString());
-        Util.Logging.log("<NEW PROCESS "+globalUUID+" STARTED>", Util.Logging.LogLevel.INFO);
-        if(args.length == 0){
+        if (args.length == 0) {
             forceArguments();
-        }
-        else{
+        } else {
             searchArguments(args);
-
         }
-        if(helpRequested){
+        Util.FileManager.setFolderName();
+        Util.FileManager.createFolder("output/" + Util.FileManager.FOLDER_NAME);
+        Util.Logging.log("<NEW PROCESS [" + Util.FileManager.FOLDER_NAME + "] STARTED>", Util.Logging.LogLevel.INFO);
+        if (helpRequested) {
             Util.ArgumentHandler.getOptions(options);
             System.exit(0);
         }
-        GridManager gridManager = new GridManager(intersectionChance,carSpawnChance,mapFile);
+        GridManager gridManager = new GridManager(intersectionChance, carSpawnChance, mapFile);
         gridManager.createWorld();
         gridManager.simulateSteps(stepsToSimulate);
         System.exit(0);
@@ -80,6 +81,7 @@ public class Main {
         verboseLogging = searchArgBoolean(options[8],args);
         pressureBasedAssessment = searchArgBoolean(options[9],args);
         maxIntersectionSteps = searchArgInt(options[10],args);
+        folderName = searchArgString(options[11],args);
         if(args.length == 0){
             helpRequested = true;
             logToFile = true;

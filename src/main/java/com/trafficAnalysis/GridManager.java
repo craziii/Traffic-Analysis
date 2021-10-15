@@ -9,11 +9,11 @@ import java.util.UUID;
 public class GridManager {
 
     public static final float WAITING_THRESHOLD_PRESSURE = 5f;
-    public static final float FULL_SPEED_PRESSURE_RATE = -2f;
-    public static final float SLOW_SPEED_PRESSURE_RATE = -1f;
+    public static final float FULL_SPEED_PRESSURE_RATE = -0.8f;
+    public static final float SLOW_SPEED_PRESSURE_RATE = -0.4f;
     public static final float WAITING_PRESSURE_RATE = 1f;
     public static final float ANNOYED_PRESSURE_RATE = 2f;
-    public static final float NO_CAR_PRESSURE_RATE = -3f;
+    public static final float NO_CAR_PRESSURE_RATE = -1f;
     public static final float LOWEST_PRESSURE = 0.01f;
 
     GridBuilder gridBuilder;
@@ -92,5 +92,6 @@ public class GridManager {
 
     void simulateSteps(long steps){
         updateManager.runSteps(steps);
+        updateManager.printFinalInformation();
     }
 }

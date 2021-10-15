@@ -108,7 +108,9 @@ public class Intersection {
             if(firstTime){
                 setStepCountdown((int) Math.floor(Math.random()*Main.maxIntersectionSteps));
             }
-            setStepCountdown(Main.maxIntersectionSteps);
+            else {
+                setStepCountdown(Main.maxIntersectionSteps);
+            }
         }
         if(pressureSystem && firstTime){
             for(double pressure:previousRedLightPressure){

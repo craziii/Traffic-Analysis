@@ -67,16 +67,16 @@ public class Util {
             String timeStamp = getTimestamp().split("\\.")[0];
             switch (level) {
                 case CRITICAL:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + criticalLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + criticalLog + message,false);
                     break;
                 case ERROR:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + errorLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + errorLog + message,false);
                     break;
                 case WARNING:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + warningLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + warningLog + message,false);
                     break;
                 case INFO:
-                    Util.FileManager.writeFile("output/"+Main.globalUUID+"/log.txt","[" + timeStamp + "]" + infoLog + message,false);
+                    Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/log.txt","[" + timeStamp + "]" + infoLog + message,false);
                     break;
             }
         }
@@ -195,6 +195,7 @@ public class Util {
     public static class FileManager{
 
         public static String DEFAULT_DELIMITER = ",";
+        public static String FOLDER_NAME = "";
 
         public static boolean createFolder(String folder){
             File file = new File(folder);
@@ -203,6 +204,15 @@ public class Util {
             }
             else{
                 return file.mkdir();
+            }
+        }
+
+        public static void setFolderName(){
+            if(Main.folderName.equals("")){
+                FOLDER_NAME = Main.globalUUID.toString();
+            }
+            else{
+                FOLDER_NAME = Main.folderName;
             }
         }
 
