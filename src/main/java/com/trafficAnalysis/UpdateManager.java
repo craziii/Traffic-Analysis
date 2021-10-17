@@ -104,13 +104,13 @@ public class UpdateManager {
         //STEP 2 - Move this info to Intersections to decide if some moves cannot be made
         testMovementsOnIntersections();
         //STEP 3 - Simulate Movement through intersections
-        simulateMovementIntoIntersections();
+        simulateMovementThroughIntersections();
         //STEP 4 - Move cars in nodes
         moveCarsInNodes();
         //STEP 5 - Add New Cars
         moveCarsIntoEntranceRoads();
         //STEP 6 - Update lights for next step
-        simulateMovementOutOfIntersections();
+        updateIntersectionLights();
         //STEP 7 - Check for Errors
         dealWithCycleErrors();
         //STEP 8 - Write information to file
@@ -186,7 +186,7 @@ public class UpdateManager {
         }
     }
 
-    void simulateMovementIntoIntersections() {
+    void simulateMovementThroughIntersections() {
         verboseLog(3);
         for (Intersection intersection : intersectionMap.values()) {
             int count = 0;
@@ -244,7 +244,7 @@ public class UpdateManager {
         }
     }
 
-    void simulateMovementOutOfIntersections(){
+    void updateIntersectionLights(){
         verboseLog(6);
         for(Intersection intersection:intersectionMap.values()){
             intersection.updateGreenLights(false,Main.pressureBasedAssessment);
