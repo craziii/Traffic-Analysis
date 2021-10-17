@@ -7,10 +7,12 @@ public class Rotation extends SingleQubitGate {
 
     Complex[][] matrix;
     private final double thetav;
+    private final Axes axis;
 
     public Rotation(double theta, Axes axis, int idx) {
         super(idx);
         this.thetav = theta;
+        this.axis = axis;
         switch(axis){
             case XAxis: matrix =  new Complex[][]{{new Complex(Math.cos(theta/2),0), new Complex(0,-Math.sin(theta/2))}, {new Complex(0,-Math.sin(theta/2)), new Complex(Math.cos(theta/2),0)}}; break;
             case YAxis: matrix =  new Complex[][]{{new Complex(Math.cos(theta/2),0),new Complex(-Math.sin(theta/2),0)}, {new Complex(Math.sin(theta/2),0),new Complex(Math.cos(theta/2))}}; break;
@@ -30,7 +32,7 @@ public class Rotation extends SingleQubitGate {
     }
 
     @Override public String getCaption() {
-        return "RotationX " + thetav;
+        return "Rotation " + axis + " " + thetav;
     }
 
     public enum Axes{
