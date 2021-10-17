@@ -98,13 +98,37 @@ public class UpdateManager {
     void updateCycle() {
         cycleCounter++;
         Instant cycleStart = Instant.now();
+        clearMoveLists();
+        //STEP 1 - Calculate Wanted Movement from Each Node on Each Road
+        calculateNodeMovement();
+        //STEP 2 - Move this info to Intersections to decide if some moves cannot be made
+        testMovementsOnIntersections();
+        //STEP 3 - Simulate Movement through intersections
+        simulateMovementIntoIntersections();
+        //STEP 4 - Move cars in nodes
+        moveCarsInNodes();
+        //STEP 5 - Add New Cars
+        moveCarsIntoEntranceRoads();
+        //STEP 6 - Update lights for next step
+        simulateMovementOutOfIntersections();
+        //STEP 7 - Check for Errors
+        dealWithCycleErrors();
+        //STEP 8 - Write information to file
+        logOutcomes();
+        //STEP 9 - Calculate Metrics
+        Instant cycleEnd = Instant.now();
+        updateCycleDuration(cycleStart,cycleEnd);
+    }
+
+    void clearMoveLists(){
+        verboseLog(0);
         nodeMoveList.clear();
         intersectionMoveList.clear();
         updateErrorsMap.clear();
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 1", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 1 - Calculate Wanted Movement from Each Node on Each Road
+    }
+
+    void calculateNodeMovement(){
+        verboseLog(1);
         ExecutorService threadPool = Executors.newCachedThreadPool();
         List<Future<NodeMove[]>> nodeTasks = new ArrayList<>();
         for (Map.Entry<UUID, Road> pair : roadMap.entrySet()) {
@@ -123,10 +147,10 @@ public class UpdateManager {
             }
         }
         threadPool.shutdown();
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 2", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 2 - Move this info to Intersections to decide if some moves cannot be made
+    }
+
+    void testMovementsOnIntersections(){
+        verboseLog(2);
         List<NodeMove> intersectionTest = new ArrayList<>();
         for (NodeMove nm : nodeMoveList) {
             if (nm.move == NodeMoveEnum.moveI1) {
@@ -160,10 +184,10 @@ public class UpdateManager {
             }
 
         }
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 3", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 3 - Simulate Movement through intersections
+    }
+
+    void simulateMovementIntoIntersections() {
+        verboseLog(3);
         for (Intersection intersection : intersectionMap.values()) {
             int count = 0;
             switch (intersection.getIntersectionType()) {
@@ -188,15 +212,10 @@ public class UpdateManager {
                 }
             }
         }
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 4", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 4 - Pass movement information back to nodes
-        //Done inside simulations
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 5", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 5 - Move cars in nodes
+    }
+
+    void moveCarsInNodes(){
+        verboseLog(4);
         for (NodeMove nm : nodeMoveList) {
             switch (nm.move) {
                 case move1:
@@ -212,10 +231,10 @@ public class UpdateManager {
                     break;
             }
         }
-        if (Main.verboseLogging) {
-            Util.Logging.log("update cycle, step 6", Util.Logging.LogLevel.INFO);
-        }
-        //TODO:STEP 6 - Add New Cars
+    }
+
+    void moveCarsIntoEntranceRoads(){
+        verboseLog(5);
         for (Road road : entryRoadMap.values()) {
             if (quantumGenerator.getNextBoolean(1)) {
                 if (!road.getFirstNode().addCar()) {
@@ -223,13 +242,17 @@ public class UpdateManager {
                 }
             }
         }
-        if(Main.verboseLogging){Util.Logging.log("update cycle, step 7", Util.Logging.LogLevel.INFO);}
-        //TODO:STEP 7 - Update lights for next step
+    }
+
+    void simulateMovementOutOfIntersections(){
+        verboseLog(6);
         for(Intersection intersection:intersectionMap.values()){
             intersection.updateGreenLights(false,Main.pressureBasedAssessment);
         }
-        if(Main.verboseLogging){Util.Logging.log("update cycle, step 8", Util.Logging.LogLevel.INFO);}
-        //TODO:STEP 8 - Check for Errors
+    }
+
+    void dealWithCycleErrors(){
+        verboseLog(7);
         if(!updateErrorsMap.isEmpty()){
             printCycleErrors();
         }
@@ -237,22 +260,34 @@ public class UpdateManager {
             Util.Logging.log("Car Spawn Errors in the past 100 cycles ["+carSpawnErrors+"]", Util.Logging.LogLevel.ERROR);
             carSpawnErrors = 0;
         }
-        if(Main.verboseLogging){Util.Logging.log("update cycle, step 9", Util.Logging.LogLevel.INFO);}
-        //TODO:STEP 9 - Write information to file
-        //writePressure();
-        //writeCars();
-        writeIntersections();
+    }
+
+    void logOutcomes(){
+        verboseLog(8);
+        if(Main.verboseLogging && Main.logToFile) {
+            writePressureOutput();
+            writeCarsOutput();
+        }
+        writeIntersectionOutput();
         checkPressure();
-        //TODO:STEP 10 - Calculate Metrics
-        Instant cycleEnd = Instant.now();
-        cycleTime = Duration.between(cycleStart,cycleEnd);
+    }
+
+    void updateCycleDuration(Instant start, Instant end){
+        verboseLog(9);
+        cycleTime = Duration.between(start,end);
         totalTime = totalTime.plus(cycleTime);
         if(cycleCounter % Main.updateRate == 0){
             printMetrics();
         }
     }
 
-    void writeCars(){
+    void verboseLog(int step){
+        if (Main.verboseLogging) {
+            Util.Logging.log("update cycle, step " + step, Util.Logging.LogLevel.INFO);
+        }
+    }
+
+    void writeCarsOutput(){
         if(cycleCounter == 1){
             Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Cars.csv","",true);
         }
@@ -275,7 +310,7 @@ public class UpdateManager {
         Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Cars.csv",lines.toArray(new String[0]),false);
     }
 
-    void writePressure(){
+    void writePressureOutput(){
         if(cycleCounter == 1){
             Util.FileManager.writeFile("output/"+Util.FileManager.FOLDER_NAME+"/Pressure.csv","",true);
         }
@@ -299,7 +334,7 @@ public class UpdateManager {
         Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/Pressure.csv", lines.toArray(new String[0]), false);
     }
 
-    void writeIntersections(){
+    void writeIntersectionOutput(){
         for(Intersection intersection:intersectionMap.values()) {
             if (cycleCounter == 1) {
                 Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/Intersection-[" + intersection.mapLocation[0] + "," + intersection.mapLocation[1] + "]" + intersection.getUuid() + ".csv", "cycleNumber,lightCountdown,northPressure,eastPressure,southPressure,westPressure,northLight,eastLight,southLight,westLight", true);
