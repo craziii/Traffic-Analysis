@@ -2,6 +2,7 @@ package com.trafficAnalysis;
 
 import javax.lang.model.type.IntersectionType;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -107,6 +108,13 @@ public class Intersection {
         else if(stepCountdown == 0){
             if(firstTime){
                 setStepCountdown((int) Math.floor(Math.random()*Main.maxIntersectionSteps));
+                List<UpdateManager.Direction> outputDirs = new ArrayList<>();
+                for(int i = 0; i < inRoads.length; i++){
+                    if(inRoads[i] != null){
+                        outputDirs.add(UpdateManager.intToDirection(i));
+                    }
+                }
+                outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
             }
             else {
                 setStepCountdown(Main.maxIntersectionSteps);

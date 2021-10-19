@@ -52,7 +52,47 @@ public class GridManager {
         Instant start = Instant.now();
         gridBuilder.fileToIntersectionMapping();
         gridBuilder.intersectionMappingToWorldMap();
+        for(Road road:updateManager.roadMap.values()){
+            boolean hasIn;
+            boolean hasOut;
+            try{
+                road.getInIntersection().getUuid();
+                hasIn = true;
+            }
+            catch(Exception e){
+                hasIn = false;
+            }
+            try{
+                road.getOutIntersection().getUuid();
+                hasOut = true;
+            }
+            catch(Exception e){
+                hasOut = false;
+            }
+            Integer[] position = gridBuilder.getRoadLocation(road.getUuid());
+            if(hasIn && hasOut){
+                Util.Logging.log("["+position[0]+","+position[1]+"]["+road.getUuid()+"]["+road.getInIntersection().getUuid()+"]["+road.getOutIntersection().getUuid()+"]", Util.Logging.LogLevel.INFO);
+            }
+            else if(hasIn){
+                Util.Logging.log("["+position[0]+","+position[1]+"]["+road.getUuid()+"]["+road.getInIntersection().getUuid()+"][NULL]", Util.Logging.LogLevel.INFO);
+            }
+            else if(hasOut){
+                Util.Logging.log("["+position[0]+","+position[1]+"]["+road.getUuid()+"][NULL]["+road.getOutIntersection().getUuid()+"]", Util.Logging.LogLevel.INFO);
+            }
+            else{
+                Util.Logging.log("["+position[0]+","+position[1]+"]["+road.getUuid()+"][NULL][NULL]", Util.Logging.LogLevel.INFO);
+            }
+
+        }
         onCreationComplete();
+        for(Road road:updateManager.entryRoadMap.values()){
+            Integer[] position = gridBuilder.getRoadLocation(road.getUuid());
+            Util.Logging.log("Road ["+road.getUuid()+"] in position ["+position[0]+","+position[1]+"] assigned as entrance road", Util.Logging.LogLevel.INFO);
+        }
+        for(Road road:updateManager.exitRoadMap.values()){
+            Integer[] position = gridBuilder.getRoadLocation(road.getUuid());
+            Util.Logging.log("Road ["+road.getUuid()+"] in position ["+position[0]+","+position[1]+"] assigned as exit road", Util.Logging.LogLevel.INFO);
+        }
         Instant end = Instant.now();
         Duration worldCreationDuration = Duration.between(start,end);
         Util.Logging.log("World Map Complete, time taken to create [" + worldCreationDuration.toMinutesPart() + "m" + worldCreationDuration.toSecondsPart() + "." + worldCreationDuration.toMillisPart() + "s]", Util.Logging.LogLevel.INFO);
