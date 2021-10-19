@@ -116,6 +116,10 @@ public class Intersection3Way extends Intersection{
                 currentOutput = UpdateManager.intToDirection(i);
             }
         }
+        if(currentOutput == UpdateManager.Direction.none){
+            currentOutput = outputDirections[0];
+            greenLights[outputDirections[0].ordinal()] = true;
+        }
         double[] pressures = {0,0,0};
         UpdateManager.Direction[] possibleOutputs = {UpdateManager.Direction.none, UpdateManager.Direction.none, UpdateManager.Direction.none};
         pressures[0] = inRoads[currentOutput.ordinal()].getTotalPressure();
@@ -151,14 +155,8 @@ public class Intersection3Way extends Intersection{
             return;
         }
         if (firstTime) {
+            Util.Logging.log("Intersection ["+this.getUuid()+"] running first time setup", Util.Logging.LogLevel.INFO);
             List<UpdateManager.Direction> lights = new ArrayList<>();
-            List<UpdateManager.Direction> outputDirs = new ArrayList<>();
-            for (int i = 0; i < inRoads.length; i++) {
-                if (inRoads[i] != null) {
-                    outputDirs.add(UpdateManager.Direction.values()[i]);
-                }
-            }
-            outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
             if (quantumGenerator.getNextBoolean(3)) {
                 lights.add(outputDirections[0]);
             } else if (quantumGenerator.getNextBoolean(2)) {
@@ -168,7 +166,7 @@ public class Intersection3Way extends Intersection{
             }
             setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
         }
-        if(pressureSystem){
+        if(pressureSystem && !firstTime){
             updateGreenLightsPressure();
         }
         else{

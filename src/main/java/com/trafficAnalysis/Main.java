@@ -39,34 +39,18 @@ public class Main {
     public static void main(String[] args) {
         globalUUID = UUID.randomUUID();
         Util.FileManager.createFolder("output");
-        if (args.length == 0) {
-            forceArguments();
-        } else {
-            searchArguments(args);
-        }
-        Util.FileManager.setFolderName();
-        Util.FileManager.createFolder("output/" + Util.FileManager.FOLDER_NAME);
-        Util.Logging.log("<NEW PROCESS [" + Util.FileManager.FOLDER_NAME + "] STARTED>", Util.Logging.LogLevel.INFO);
+        searchArguments(args);
         if (helpRequested) {
             Util.ArgumentHandler.getOptions(options);
             System.exit(0);
         }
+        Util.FileManager.setFolderName();
+        Util.FileManager.createFolder("output/" + Util.FileManager.FOLDER_NAME);
+        Util.Logging.log("<NEW PROCESS [" + Util.FileManager.FOLDER_NAME + "] STARTED>", Util.Logging.LogLevel.INFO);
         GridManager gridManager = new GridManager(intersectionChance, carSpawnChance, mapFile);
         gridManager.createWorld();
         gridManager.simulateSteps(stepsToSimulate);
         System.exit(0);
-    }
-
-    static void forceArguments(){
-        intersectionChance = 0.5;
-        carSpawnChance = 0.2;
-        mapFile = "Map.csv";
-        logToFile = true;
-        stepsToSimulate = 100;
-        updateRate = 1;
-        runInEditor = true;
-        verboseLogging = true;
-        pressureBasedAssessment = true;
     }
 
     static void searchArguments(String[] args){

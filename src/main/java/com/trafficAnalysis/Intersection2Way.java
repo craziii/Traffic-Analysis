@@ -12,19 +12,11 @@ public class Intersection2Way extends Intersection{
     @Override
     UpdateManager.IntersectionMove getNextIntersectionOutput(QuantumGenerator quantumGenerator) {
         UpdateManager.IntersectionMove temp = super.getNextIntersectionOutput(quantumGenerator);
-        switch(temp.in) {
-            case north:
-                temp.out = UpdateManager.Direction.south;
-                break;
-            case east:
-                temp.out = UpdateManager.Direction.west;
-                break;
-            case south:
-                temp.out = UpdateManager.Direction.north;
-                break;
-            case west:
-                temp.out = UpdateManager.Direction.east;
-                break;
+        if(temp.in == outputDirections[0]){
+            temp.out = outputDirections[1];
+        }
+        else{
+            temp.out = outputDirections[0];
         }
         if(validIntersectionOutput(temp.out)){
             carsInIntersection.remove();
@@ -80,13 +72,6 @@ public class Intersection2Way extends Intersection{
         }
         if(firstTime){
             List<UpdateManager.Direction> lights = new ArrayList<>();
-            List<UpdateManager.Direction> outputDirs = new ArrayList<>();
-            for(int i = 0; i < inRoads.length; i++){
-                if(inRoads[i] != null){
-                    outputDirs.add(UpdateManager.Direction.values()[i]);
-                }
-            }
-            outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
             if(quantumGenerator.getNextBoolean(2)){
                 lights.add(outputDirections[0]);
             }
@@ -95,7 +80,7 @@ public class Intersection2Way extends Intersection{
             }
             setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
         }
-        if(pressureSystem){
+        if(pressureSystem && !firstTime){
             updateGreenLightsPressure();
         }
         else{

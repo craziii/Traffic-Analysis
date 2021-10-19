@@ -70,7 +70,10 @@ public class UpdateManager {
 
     void setEntranceRoads(){
         for(Road road:roadMap.values()){
-            if(road.inIntersection == null){
+            try{
+                road.inIntersection.getUuid();
+            }
+            catch(Exception e){
                 entryRoadMap.put(road.getUuid(),road);
             }
         }
@@ -78,7 +81,10 @@ public class UpdateManager {
 
     void setExitRoads(){
         for(Road road: roadMap.values()){
-            if(road.outIntersection == null){
+            try{
+                road.outIntersection.getUuid();
+            }
+            catch(Exception e){
                 exitRoadMap.put(road.getUuid(),road);
             }
         }

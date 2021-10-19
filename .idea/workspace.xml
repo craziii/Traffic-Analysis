@@ -11,6 +11,14 @@
   <component name="ChangeListManager">
     <list default="true" id="07f78600-3fc7-42ce-bbc1-a371a555fb98" name="Default Changelist" comment="Update Service Rewrite, Step 4-5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/GridManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection2Way.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection2Way.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3Way.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3Way.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3WayMinor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Intersection3WayMinor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/trafficAnalysis/UpdateManager.java" afterDir="false" />
     </list>
     <list id="d0e44681-cbea-41c5-b3b5-fc0bf2c2a964" name="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" comment="Uncommitted changes before Checkout at 05/10/2021 02:14 [Default Changelist]" />
@@ -174,17 +182,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Traffic-Analysis [buildDependents]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -305,7 +302,8 @@
       <workItem from="1634227139582" duration="21299000" />
       <workItem from="1634319071136" duration="670000" />
       <workItem from="1634326586270" duration="634000" />
-      <workItem from="1634414192885" duration="5225000" />
+      <workItem from="1634414192885" duration="6630000" />
+      <workItem from="1634669287027" duration="9167000" />
     </task>
     <task id="LOCAL-00001" summary="Update Service Rewrite, Step 1">
       <created>1633465479291</created>

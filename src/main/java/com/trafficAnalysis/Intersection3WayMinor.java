@@ -150,16 +150,13 @@ public class Intersection3WayMinor extends Intersection {
         if (firstTime) {
             List<UpdateManager.Direction> lights = new ArrayList<>();
             int northSouthCount = 0;
-            List<UpdateManager.Direction> outputDirs = new ArrayList<>();
             for (int i = 0; i < inRoads.length; i++) {
                 if (inRoads[i] != null) {
-                    outputDirs.add(UpdateManager.Direction.values()[i]);
                     if (i == 0 || i == 2) {
                         northSouthCount++;
                     }
                 }
             }
-            outputDirections = outputDirs.toArray(new UpdateManager.Direction[0]);
             northSouthMajor = northSouthCount == 2;
             if (northSouthMajor) {
                 for (UpdateManager.Direction dir : outputDirections) {
@@ -183,7 +180,7 @@ public class Intersection3WayMinor extends Intersection {
             }
             setGreenLights(lights.toArray(new UpdateManager.Direction[0]));
         }
-        if (pressureSystem) {
+        if (pressureSystem && !firstTime) {
             updateGreenLightsPressure();
         } else {
             updateGreenLightsNormal();
