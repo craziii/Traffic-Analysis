@@ -7,17 +7,17 @@ public class Node{
     Node[] beforeAfter = new Node[2];
     Road parentRoad;
     UUID uuid;
-    float pressure;
+    double pressure;
     CarStatus nodeStatus;
 
     public Node(){
         createUuid();
-        pressure = 0;
+        pressure = GridManager.LOWEST_PRESSURE;
         nodeStatus = CarStatus.noCar;
     }
 
     public Node(Road parent){
-        pressure = 0;
+        pressure = GridManager.LOWEST_PRESSURE;
         createUuid();
         parentRoad = parent;
         nodeStatus = CarStatus.noCar;
@@ -147,14 +147,37 @@ public class Node{
         }
     }
 
-    private void changePressure() {
+    private void changePressure(){
         switch(nodeStatus){
-            case movingFullSpeed: setPressure(getPressure()+GridManager.FULL_SPEED_PRESSURE_RATE); break;
-            case movingSlowly: setPressure(getPressure()+GridManager.SLOW_SPEED_PRESSURE_RATE); break;
-            case waiting: setPressure(getPressure()+GridManager.WAITING_PRESSURE_RATE); break;
-            case annoyed: setPressure(getPressure()+GridManager.ANNOYED_PRESSURE_RATE); break;
-            case noCar: setPressure(getPressure()+GridManager.NO_CAR_PRESSURE_RATE); break;
+            case movingFullSpeed: setPressure(movingFullSpeedPressure(getPressure())); break;
+            case movingSlowly: setPressure(movingSlowSpeedPressure(getPressure())); break;
+            case waiting: setPressure(waitingPressure(getPressure())); break;
+            case annoyed: setPressure(annoyedPressure(getPressure())); break;
+            case noCar: setPressure(noCarPressure(getPressure())); break;
         }
+        if(getPressure() > GridManager.HIGHEST_PRESSURE){
+            setPressure(GridManager.HIGHEST_PRESSURE);
+        }
+    }
+
+    double movingFullSpeedPressure(double input){
+        return (input*GridManager.FULL_SPEED_PRESSURE_RATE);
+    }
+
+    double movingSlowSpeedPressure(double input){
+        return (input*GridManager.SLOW_SPEED_PRESSURE_RATE);
+    }
+
+    double waitingPressure(double input){
+        return input*GridManager.WAITING_PRESSURE_RATE;
+    }
+
+    double annoyedPressure(double input){
+        return (Math.log(Math.exp(input)*input)*GridManager.ANNOYED_PRESSURE_RATE) + input;
+    }
+
+    double noCarPressure(double input){
+        return (input*GridManager.NO_CAR_PRESSURE_RATE);
     }
 
     boolean addCar(){
@@ -215,13 +238,13 @@ public class Node{
         beforeAfter[1] = node;
     }
 
-    float getPressure(){
+    double getPressure(){
         return pressure;
     }
 
-    void setPressure(float p){
+    void setPressure(double p){
         if(p < GridManager.LOWEST_PRESSURE){
-            pressure = 0;
+            pressure = GridManager.LOWEST_PRESSURE;
         }
         else{
             pressure = p;

@@ -57,7 +57,7 @@ public class Road{
     }
 
     void writeTotalPressure(){
-        float tempPressure = 0;
+        double tempPressure = 0;
         for (Node node:nodesInRoad) {
             tempPressure = tempPressure + node.getPressure();
         }

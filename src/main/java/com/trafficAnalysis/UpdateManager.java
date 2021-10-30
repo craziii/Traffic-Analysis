@@ -380,6 +380,7 @@ public class UpdateManager {
                 }
                 systemNodeLines = lines;
             }
+            /*
             if(r.getTotalPressure() > 100) {
                 Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "Success,cycleCount,maxPressure,road,intersection", true);
                 Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "0," + cycleCounter + "," + r.getTotalPressure() + "," + r.getUuid() + "," + r.outIntersection.getUuid(), false);
@@ -392,6 +393,7 @@ public class UpdateManager {
                 Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/fail.log", lines.toArray(new String[0]), false);
                 System.exit(0);
             }
+            */
         }
     }
 
