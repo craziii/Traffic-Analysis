@@ -12,3 +12,7 @@
 /maps/*
 /runTest.bat
 /runTest2.bat
+/runTestTiming.bat
+/runTestPacked.bat
+/prelimTest.bat
+/runTestPressureOverTime.bat
