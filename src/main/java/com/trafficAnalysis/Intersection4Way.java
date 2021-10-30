@@ -27,7 +27,7 @@ public class Intersection4Way extends Intersection{
                     temp.out = UpdateManager.Direction.east;
                     break;
             }
-        } else if (quantumGenerator.getNextBoolean(0)) { // Second, left turn
+        } else if (quantumGenerator.getNextBoolean(2)) { // Second, left turn
             switch (temp.in) {
                 case north:
                     temp.out = UpdateManager.Direction.east;
