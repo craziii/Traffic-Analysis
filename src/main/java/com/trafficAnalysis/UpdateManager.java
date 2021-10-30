@@ -380,6 +380,7 @@ public class UpdateManager {
                 }
                 systemNodeLines = lines;
             }
+            // Old system shutdown method
             /*
             if(r.getTotalPressure() > 100) {
                 Util.FileManager.writeFile("output/" + Util.FileManager.FOLDER_NAME + "/outcome.log", "Success,cycleCount,maxPressure,road,intersection", true);
